@@ -6,4 +6,4 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ## [Não lançado]
 
 ### Adicionado
-- Estrutura inicial do projeto.
+- Estrutura inicial do projeto, CLAUDE.md, documento de arquitetura e ADRs 0001 a 0008.
