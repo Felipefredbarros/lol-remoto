@@ -26,6 +26,7 @@ from lol_remoto.servicos.estado import Estado
 from lol_remoto.servicos.icones import ServicoIcones
 from lol_remoto.servicos.monitor import Monitor
 from lol_remoto.servicos.notificacoes import ServicoNotificacoes
+from lol_remoto.servicos.runas import ServicoRunas
 from lol_remoto.servicos.sessoes import ServicoSessoes
 from lol_remoto.servicos.tokens import ServicoTokens
 
@@ -62,6 +63,7 @@ class App:
             sessoes=ServicoSessoes(arquivo_sessoes),
             tokens=tokens,
             notificador=self.notificador,
+            runas=ServicoRunas(self.estado, lambda: self.monitor.lcu),
         )
         self._icones = ServicoIcones(lambda: self.monitor.lcu)
         self._canal = CanalSse(

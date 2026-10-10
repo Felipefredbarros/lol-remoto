@@ -11,6 +11,7 @@ from lol_remoto.plataforma.ntfy import Notificador
 from lol_remoto.servicos.acoes import ServicoAcoes
 from lol_remoto.servicos.autenticacao import ServicoAutenticacao
 from lol_remoto.servicos.estado import Estado
+from lol_remoto.servicos.runas import ServicoRunas
 from lol_remoto.servicos.sessoes import ServicoSessoes
 from lol_remoto.servicos.tokens import ServicoTokens
 
@@ -48,6 +49,7 @@ class Dependencias:
     sessoes: ServicoSessoes
     tokens: ServicoTokens
     notificador: Notificador
+    runas: ServicoRunas
 
 
 Rota = Callable[[Dependencias, Pedido], Resposta]

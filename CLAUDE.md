@@ -33,11 +33,13 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 | serviços | `servicos/autenticacao.py` | PIN × hash + bloqueio por IP |
 | serviços | `servicos/sessoes.py` | Tokens de sessão do cookie (só o SHA-256 fica salvo) |
 | serviços | `servicos/tokens.py` | Tokens de uso único dos botões da notificação |
+| serviços | `servicos/runas.py` | Runas recomendadas: grava na página "LoL Remoto" e põe os feitiços |
 | serviços | `servicos/icones.py` | Ícones dos campeões via LCU, com cache em memória |
 | domínio | `dominio/fase.py` | Fases do gameflow, transições e “pode agir?” |
 | domínio | `dominio/selecao.py` | JSON da sessão de seleção → `Selecao` (times, bans, ação atual, timer) |
 | domínio | `dominio/avisos.py` | Regras de quando avisar (ready check, sua vez, dodge, carregando) |
 | domínio | `dominio/ready_check.py` | Partida encontrada: estado e a sua resposta |
+| domínio | `dominio/runas.py` | Recomendações de runas, Flash no D, corpo da página de runas |
 | domínio | `dominio/campeoes.py` | Catálogo de campeões (id → nome) e filtros |
 | domínio | `dominio/pin.py` | Formato do PIN, geração e hash PBKDF2-SHA256 |
 | plataforma | `plataforma/lockfile.py` | Lê o lockfile do cliente (porta e senha, que mudam a cada abertura) |

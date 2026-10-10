@@ -1,0 +1,392 @@
+{
+ "_comentario": "Trechos reais (out/2026) de /lol-perks/v1/recommended-pages e /lol-perks/v1/styles, só com os campos usados.",
+ "estilos": {
+  "8000": "Precisão",
+  "8100": "Dominação",
+  "8200": "Feitiçaria",
+  "8300": "Inspiração",
+  "8400": "Determinação"
+ },
+ "ahri_meio_sr": [
+  {
+   "isDefaultPosition": true,
+   "position": "MIDDLE",
+   "primaryPerkStyleId": 8100,
+   "secondaryPerkStyleId": 8200,
+   "summonerSpellIds": [
+    4,
+    14
+   ],
+   "keystone": {
+    "id": 8112,
+    "name": "Eletrocutar",
+    "recommendationDescriptor": "Dano de combo",
+    "styleId": 8100
+   },
+   "perks": [
+    {
+     "id": 8112,
+     "name": "Eletrocutar",
+     "styleId": 8100
+    },
+    {
+     "id": 8139,
+     "name": "Gosto de Sangue",
+     "styleId": 8100
+    },
+    {
+     "id": 8140,
+     "name": "Lembranças Aterrorizantes",
+     "styleId": 8100
+    },
+    {
+     "id": 8106,
+     "name": "Caça Suprema",
+     "styleId": 8100
+    },
+    {
+     "id": 8226,
+     "name": "Faixa de Fluxo de Mana",
+     "styleId": 8200
+    },
+    {
+     "id": 8210,
+     "name": "Transcendência",
+     "styleId": 8200
+    },
+    {
+     "id": 5005,
+     "name": "Velocidade de Ataque",
+     "styleId": 8400
+    },
+    {
+     "id": 5008,
+     "name": "Força Adaptativa",
+     "styleId": 8400
+    },
+    {
+     "id": 5001,
+     "name": "Escalamento de Vida",
+     "styleId": 8400
+    }
+   ]
+  },
+  {
+   "isDefaultPosition": true,
+   "position": "MIDDLE",
+   "primaryPerkStyleId": 8100,
+   "secondaryPerkStyleId": 8300,
+   "summonerSpellIds": [
+    4,
+    14
+   ],
+   "keystone": {
+    "id": 8112,
+    "name": "Eletrocutar",
+    "recommendationDescriptor": "Dano de combo",
+    "styleId": 8100
+   },
+   "perks": [
+    {
+     "id": 8112,
+     "name": "Eletrocutar",
+     "styleId": 8100
+    },
+    {
+     "id": 8139,
+     "name": "Gosto de Sangue",
+     "styleId": 8100
+    },
+    {
+     "id": 8140,
+     "name": "Lembranças Aterrorizantes",
+     "styleId": 8100
+    },
+    {
+     "id": 8106,
+     "name": "Caça Suprema",
+     "styleId": 8100
+    },
+    {
+     "id": 8345,
+     "name": "Entrega de Biscoitos",
+     "styleId": 8300
+    },
+    {
+     "id": 8347,
+     "name": "Perspicácia Cósmica",
+     "styleId": 8300
+    },
+    {
+     "id": 5005,
+     "name": "Velocidade de Ataque",
+     "styleId": 8400
+    },
+    {
+     "id": 5008,
+     "name": "Força Adaptativa",
+     "styleId": 8400
+    },
+    {
+     "id": 5001,
+     "name": "Escalamento de Vida",
+     "styleId": 8400
+    }
+   ]
+  },
+  {
+   "isDefaultPosition": true,
+   "position": "MIDDLE",
+   "primaryPerkStyleId": 8200,
+   "secondaryPerkStyleId": 8100,
+   "summonerSpellIds": [
+    4,
+    14
+   ],
+   "keystone": {
+    "id": 8992,
+    "name": "Toque Ígneo",
+    "recommendationDescriptor": "Dano de Habilidade contínuo",
+    "styleId": 8200
+   },
+   "perks": [
+    {
+     "id": 8992,
+     "name": "Toque Ígneo",
+     "styleId": 8200
+    },
+    {
+     "id": 8226,
+     "name": "Faixa de Fluxo de Mana",
+     "styleId": 8200
+    },
+    {
+     "id": 8210,
+     "name": "Transcendência",
+     "styleId": 8200
+    },
+    {
+     "id": 8237,
+     "name": "Chamuscar",
+     "styleId": 8200
+    },
+    {
+     "id": 8139,
+     "name": "Gosto de Sangue",
+     "styleId": 8100
+    },
+    {
+     "id": 8106,
+     "name": "Caça Suprema",
+     "styleId": 8100
+    },
+    {
+     "id": 5005,
+     "name": "Velocidade de Ataque",
+     "styleId": 8400
+    },
+    {
+     "id": 5008,
+     "name": "Força Adaptativa",
+     "styleId": 8400
+    },
+    {
+     "id": 5001,
+     "name": "Escalamento de Vida",
+     "styleId": 8400
+    }
+   ]
+  }
+ ],
+ "soraka_aram": [
+  {
+   "isDefaultPosition": true,
+   "position": "NONE",
+   "primaryPerkStyleId": 8200,
+   "secondaryPerkStyleId": 8000,
+   "summonerSpellIds": [
+    13,
+    4
+   ],
+   "keystone": {
+    "id": 8214,
+    "name": "Invocar Aery",
+    "recommendationDescriptor": "Dano de poke",
+    "styleId": 8200
+   },
+   "perks": [
+    {
+     "id": 8214,
+     "name": "Invocar Aery",
+     "styleId": 8200
+    },
+    {
+     "id": 8226,
+     "name": "Faixa de Fluxo de Mana",
+     "styleId": 8200
+    },
+    {
+     "id": 8210,
+     "name": "Transcendência",
+     "styleId": 8200
+    },
+    {
+     "id": 8237,
+     "name": "Chamuscar",
+     "styleId": 8200
+    },
+    {
+     "id": 8014,
+     "name": "Golpe de Misericórdia",
+     "styleId": 8000
+    },
+    {
+     "id": 8009,
+     "name": "Presença de Espírito",
+     "styleId": 8000
+    },
+    {
+     "id": 5008,
+     "name": "Força Adaptativa",
+     "styleId": 8400
+    },
+    {
+     "id": 5008,
+     "name": "Força Adaptativa",
+     "styleId": 8400
+    },
+    {
+     "id": 5001,
+     "name": "Escalamento de Vida",
+     "styleId": 8400
+    }
+   ]
+  },
+  {
+   "isDefaultPosition": true,
+   "position": "NONE",
+   "primaryPerkStyleId": 8200,
+   "secondaryPerkStyleId": 8400,
+   "summonerSpellIds": [
+    13,
+    4
+   ],
+   "keystone": {
+    "id": 8214,
+    "name": "Invocar Aery",
+    "recommendationDescriptor": "Dano de poke",
+    "styleId": 8200
+   },
+   "perks": [
+    {
+     "id": 8214,
+     "name": "Invocar Aery",
+     "styleId": 8200
+    },
+    {
+     "id": 8226,
+     "name": "Faixa de Fluxo de Mana",
+     "styleId": 8200
+    },
+    {
+     "id": 8210,
+     "name": "Transcendência",
+     "styleId": 8200
+    },
+    {
+     "id": 8237,
+     "name": "Chamuscar",
+     "styleId": 8200
+    },
+    {
+     "id": 8473,
+     "name": "Osso Revestido",
+     "styleId": 8400
+    },
+    {
+     "id": 8453,
+     "name": "Revitalizar",
+     "styleId": 8400
+    },
+    {
+     "id": 5008,
+     "name": "Força Adaptativa",
+     "styleId": 8400
+    },
+    {
+     "id": 5008,
+     "name": "Força Adaptativa",
+     "styleId": 8400
+    },
+    {
+     "id": 5001,
+     "name": "Escalamento de Vida",
+     "styleId": 8400
+    }
+   ]
+  },
+  {
+   "isDefaultPosition": true,
+   "position": "NONE",
+   "primaryPerkStyleId": 8100,
+   "secondaryPerkStyleId": 8000,
+   "summonerSpellIds": [
+    13,
+    4
+   ],
+   "keystone": {
+    "id": 8128,
+    "name": "Colheita Sombria",
+    "recommendationDescriptor": "Executar inimigos",
+    "styleId": 8100
+   },
+   "perks": [
+    {
+     "id": 8128,
+     "name": "Colheita Sombria",
+     "styleId": 8100
+    },
+    {
+     "id": 8126,
+     "name": "Golpe Desleal",
+     "styleId": 8100
+    },
+    {
+     "id": 8140,
+     "name": "Lembranças Aterrorizantes",
+     "styleId": 8100
+    },
+    {
+     "id": 8106,
+     "name": "Caça Suprema",
+     "styleId": 8100
+    },
+    {
+     "id": 8014,
+     "name": "Golpe de Misericórdia",
+     "styleId": 8000
+    },
+    {
+     "id": 8009,
+     "name": "Presença de Espírito",
+     "styleId": 8000
+    },
+    {
+     "id": 5008,
+     "name": "Força Adaptativa",
+     "styleId": 8400
+    },
+    {
+     "id": 5008,
+     "name": "Força Adaptativa",
+     "styleId": 8400
+    },
+    {
+     "id": 5001,
+     "name": "Escalamento de Vida",
+     "styleId": 8400
+    }
+   ]
+  }
+ ]
+}

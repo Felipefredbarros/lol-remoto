@@ -25,6 +25,7 @@ from lol_remoto.plataforma.lcu import ErroLcu
 from lol_remoto.plataforma.ntfy import ErroNotificacao
 from lol_remoto.servicos.acoes import AcaoIndisponivel, CampeaoIndisponivel, ClienteDesconectado
 from lol_remoto.servicos.autenticacao import AcessoBloqueado, PinIncorreto
+from lol_remoto.servicos.runas import EscolhaInvalida, SemPaginaLivre
 
 log = logging.getLogger(__name__)
 
@@ -41,15 +42,19 @@ ROTAS: dict[tuple[str, str], Rota] = {
     ("POST", "/api/selecao/confirmar"): rotas_cliente.confirmar,
     ("POST", "/api/selecao/aram/reroll"): rotas_cliente.rerolar,
     ("POST", "/api/selecao/aram/trocar"): rotas_cliente.trocar_do_banco,
+    ("GET", "/api/runas"): rotas_cliente.runas,
+    ("POST", "/api/runas/aplicar"): rotas_cliente.aplicar_runas,
 }
 
 _STATUS_POR_ERRO: dict[type[Exception], int] = {
     RequisicaoInvalida: 400,
     CampeaoIndisponivel: 400,
+    EscolhaInvalida: 400,
     NaoAutenticado: 401,
     PinIncorreto: 401,
     ForaDeFase: 409,
     AcaoIndisponivel: 409,
+    SemPaginaLivre: 409,
     AcessoBloqueado: 429,
     ErroLcu: 502,
     ErroNotificacao: 502,

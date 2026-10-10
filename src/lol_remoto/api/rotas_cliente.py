@@ -56,3 +56,36 @@ def trocar_do_banco(deps: Dependencias, pedido: Pedido) -> Resposta:
     exigir_sessao(deps, pedido)
     deps.acoes.trocar_do_banco(pedido.corpo.get("campeao"))
     return resposta_estado(deps)
+
+
+def runas(deps: Dependencias, pedido: Pedido) -> Resposta:
+    """As 3 runas recomendadas pelo cliente para o meu campeão, com nomes para a página."""
+    exigir_sessao(deps, pedido)
+    recomendacoes = deps.runas.recomendacoes()
+    estilos = deps.runas.nomes("estilos")
+    feiticos = deps.runas.nomes("feiticos")
+    return Resposta(
+        200,
+        {
+            "recomendacoes": [
+                {
+                    "indice": r.indice,
+                    "principal": r.principal,
+                    "descricao": r.descricao,
+                    "estilos": f"{estilos.get(r.estilo_principal, '?')} + "
+                    f"{estilos.get(r.estilo_secundario, '?')}",
+                    "feiticos": [feiticos.get(f, f"#{f}") for f in r.feiticos],
+                }
+                for r in recomendacoes
+            ]
+        },
+    )
+
+
+def aplicar_runas(deps: Dependencias, pedido: Pedido) -> Resposta:
+    exigir_sessao(deps, pedido)
+    escolhida = deps.runas.aplicar(
+        pedido.corpo.get("indice"),
+        sobrescrever_atual=pedido.corpo.get("sobrescrever_atual") is True,
+    )
+    return Resposta(200, {"aplicada": escolhida.principal})

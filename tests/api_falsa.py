@@ -18,6 +18,7 @@ from lol_remoto.servicos.acoes import BANIVEIS, PICKAVEIS, ServicoAcoes
 from lol_remoto.servicos.autenticacao import ServicoAutenticacao
 from lol_remoto.servicos.estado import Estado
 from lol_remoto.servicos.icones import ServicoIcones
+from lol_remoto.servicos.runas import ServicoRunas
 from lol_remoto.servicos.sessoes import ServicoSessoes
 from lol_remoto.servicos.tokens import ServicoTokens
 
@@ -49,6 +50,7 @@ class ApiFalsa:
             sessoes=ServicoSessoes(None),
             tokens=self.tokens,
             notificador=self.notificador,
+            runas=ServicoRunas(self.estado, lambda: self.lcu),
         )
         self.canal = CanalSse(
             self.estado,

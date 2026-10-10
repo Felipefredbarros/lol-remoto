@@ -17,7 +17,7 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 8 | Ações: ready check, pick/ban, ARAM | ✅ (falta validar ao vivo) | `f409d53` |
 | 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ✅ | `ee43194` |
 | 10 | API HTTP + SSE | ✅ | `90a4279`, ajuste `a58ecd5` |
-| 10b | Runas recomendadas e feitiços | ⏳ | |
+| 10b | Runas recomendadas e feitiços | ✅ (feitiços a validar ao vivo) | (próximo commit `feat`) |
 | 11 | Interface web do celular | 🔄 | |
 | 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ⏳ | |
 | 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ⏳ | |
@@ -87,7 +87,7 @@ O teste do Felipe numa personalizada e duas gravações (`tests/fixtures/gravaco
 - Na normal o planejamento dura 12 s, e os 10 bans ficam "em andamento" ao mesmo tempo (bans simultâneos).
 - A partida encontrada manda um evento por segundo (`timer` de 0 a 10) e dura uns 10 s.
 - Troca de ordem de pick gera um segundo "sua vez de escolher", correto pelos dados.
-- A gravação feita logo após o cliente abrir **não recebeu os eventos do ready check**. Agora o app assina o canal geral `OnJsonApiEvent` e filtra pelo `uri` (ADR 0002). **Falta validar ao vivo** com o cliente aberto.
+- A gravação feita logo após o cliente abrir **não recebeu os eventos do ready check**. Agora o app assina o canal geral `OnJsonApiEvent` e filtra pelo `uri` (ADR 0002). Validado ao vivo depois (etapa 10b).
 - Dodge na finalização vira fixture real (`normal_alternada_dodge.jsonl`).
 
 **ARAM (decidido com o Felipe):** no começo aparecem alguns campeões para escolher e, se ele não escolher, o cliente escolhe sozinho. Ele **não quer escolher pelo celular**: basta aceitar a partida, saber qual campeão pegou e ser avisado do carregamento, o que o app já faz. Sem aviso de "sua vez" no ARAM. A página do ARAM mostra só o campeão e o time.
@@ -116,12 +116,16 @@ Rotas JSON, `/api/eventos` (SSE), ícones dos campeões via LCU e as proteções
 - Testes de ponta a ponta com servidor real (`tests/api_falsa.py`): login, cookie, proteções, trava de fase, tokens, SSE e ícones.
 - Conferido com o app completo: login, estado, SSE e o servidor no IP do Tailscale.
 
-### 10b. Runas recomendadas e feitiços
+### 10b. Runas recomendadas e feitiços ✅
 Pedido do Felipe: escolher pelo celular uma das **3 páginas de runas recomendadas** do cliente, com os feitiços.
 - Decisões: o app grava sempre numa página chamada **"LoL Remoto"** (cria se houver espaço; senão pergunta se pode sobrescrever a atual) e põe o **Flash sempre no D**.
 - Só na seleção, depois de travar o campeão (ou recebê-lo, no ARAM). Vale também para o ARAM.
 - Primeiro passo: explorar os endpoints com o cliente aberto, só leitura (`/lol-perks/v1/pages`, `/lol-perks/v1/recommended-pages/...`, `/lol-champ-select/v1/session/my-selection`). Depois: serviço, rotas, testes e ADR.
-- Validar ao vivo numa seleção com o Felipe.
+- Exploração feita: não há comando de "aplicar recomendação"; o app monta a página. O Felipe tinha as 3 páginas ocupadas e renomeou uma para "LoL Remoto".
+- **Teste ao vivo autorizado:** `PUT` na página "LoL Remoto" com a 1ª recomendação da Ahri funcionou (mesmo id, válida, selecionada).
+- Recomendações reais (Ahri meio e Soraka ARAM) salvas em `tests/fixtures/runas_recomendadas.json`. No ARAM os feitiços vieram com o Flash no F, e o app inverte.
+- A assinatura do canal geral de eventos foi validada ao vivo (eventos de lobby chegaram).
+- **Falta validar numa seleção:** os feitiços (`PATCH my-selection`). Ver [ADR 0009](decisoes/0009-runas-recomendadas-na-pagina-lol-remoto.md).
 
 ### 11. Interface web
 Login, modo ausente, tela da seleção (bans, picks, quem está escolhendo, timer), busca e grade de campeões, ARAM e botão "Testar notificação".

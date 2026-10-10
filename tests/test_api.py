@@ -244,3 +244,43 @@ def test_icone(api):
     assert api.requisitar("GET", "/api/campeoes/999.png", cookie=token)[0] == 404
     api.lcu = None  # cliente fechou: o ícone já está em cache
     assert api.requisitar("GET", "/api/campeoes/103.png", cookie=token)[0] == 200
+
+
+# ---------- runas ----------
+
+
+def test_runas_recomendadas_e_aplicar(api, sessao_draft):
+    from conftest import carregar_fixture
+
+    real = carregar_fixture("runas_recomendadas.json")
+    rota_lcu = "/lol-perks/v1/recommended-pages/champion/103/position/MIDDLE/map/11"
+    api.lcu.respostas.update(
+        {
+            rota_lcu: real["ahri_meio_sr"],
+            "/lol-perks/v1/styles": [{"id": int(i), "name": n} for i, n in real["estilos"].items()],
+            "/lol-game-data/assets/v1/summoner-spells.json": [
+                {"id": 4, "name": "Flash"},
+                {"id": 14, "name": "Incendiar"},
+            ],
+            "/lol-perks/v1/pages": [{"id": 7, "name": "LoL Remoto", "isEditable": True}],
+        }
+    )
+    sessao_draft["myTeam"][2]["championId"] = 103
+    api.estado.atualizar(conectado=True, fase=Fase.SELECAO, selecao=selecao_de(sessao_draft))
+    token = api.entrar()
+
+    status, dados = api.json("GET", "/api/runas", cookie=token)
+    assert status == 200
+    assert dados["recomendacoes"][0] == {
+        "indice": 0,
+        "principal": "Eletrocutar",
+        "descricao": "Dano de combo",
+        "estilos": "Dominação + Feitiçaria",
+        "feiticos": ["Flash", "Incendiar"],
+    }
+    status, dados = api.json("POST", "/api/runas/aplicar", {"indice": 1}, cookie=token)
+    assert (status, dados) == (200, {"aplicada": "Eletrocutar"})
+    assert api.json("POST", "/api/runas/aplicar", {"indice": 9}, cookie=token)[0] == 400
+    api.lcu.respostas["/lol-perks/v1/pages"] = []
+    status, dados = api.json("POST", "/api/runas/aplicar", {"indice": 0}, cookie=token)
+    assert status == 409 and "Renomeie" in dados["erro"]

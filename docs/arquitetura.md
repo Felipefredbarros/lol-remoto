@@ -103,6 +103,8 @@ No ARAM não há ação de pick. A tela mostra o seu campeão e o banco, com **R
 | `POST /api/selecao/marcar` `{campeao}` | sim | Hover na sua vez; intenção no planejamento |
 | `POST /api/selecao/confirmar` `{campeao?}` | sim | Trava o ban/pick |
 | `POST /api/selecao/aram/reroll` e `/trocar` `{campeao}` | sim | ARAM |
+| `GET /api/runas` | sim | As 3 runas recomendadas pelo cliente para o seu campeão |
+| `POST /api/runas/aplicar` `{indice, sobrescrever_atual?}` | sim | Grava na página "LoL Remoto" e põe os feitiços (Flash no D); ver [ADR 0009](decisoes/0009-runas-recomendadas-na-pagina-lol-remoto.md) |
 
 Status: 400 (entrada inválida), 401 (sem sessão/PIN), 409 (fora de fase ou não é a sua vez), 429 (bloqueio), 502 (LCU/ntfy recusou), 503 (cliente fechado).
 
