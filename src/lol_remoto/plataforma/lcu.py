@@ -30,6 +30,7 @@ READY_CHECK = "/lol-matchmaking/v1/ready-check"
 EVENTOS_ASSINADOS = (FASE, SESSAO_SELECAO, READY_CHECK)
 
 _MENSAGEM_EVENTO = 8  # tipo WAMP "EVENT"; 0 é a boas-vindas, ignorada
+EVENTO_GERAL = "OnJsonApiEvent"  # todos os eventos da API
 
 
 class ErroLcu(RuntimeError):
@@ -58,7 +59,7 @@ class Lcu(Protocol):
         """Conteúdo binário (ex.: ícone de campeão)."""
 
     def eventos(self, caminhos: Iterable[str]) -> Iterator[Evento]:
-        """Assina os caminhos e produz eventos até a conexão cair (`ConexaoFechada`)."""
+        """Produz os eventos desses caminhos (exatos) até a conexão cair (`ConexaoFechada`)."""
 
     def fechar(self) -> None:
         """Encerra a conexão de eventos (destrava `eventos` em outra thread)."""
@@ -70,11 +71,6 @@ def contexto_tls() -> ssl.SSLContext:
     # padrão. Cadeia, validade e nome (127.0.0.1) continuam verificados.
     contexto.verify_flags &= ~ssl.VERIFY_X509_STRICT
     return contexto
-
-
-def nome_do_evento(caminho: str) -> str:
-    """'/lol-gameflow/v1/gameflow-phase' → 'OnJsonApiEvent_lol-gameflow_v1_gameflow-phase'."""
-    return "OnJsonApiEvent" + caminho.replace("/", "_")
 
 
 def evento_de(mensagem: str) -> Evento | None:
@@ -174,15 +170,20 @@ class LcuHttp:
             tempo_limite=self._tempo_limite,
         )
         self._ws = ws
-        for caminho in caminhos:
-            ws.enviar_texto(json.dumps([5, nome_do_evento(caminho)]))
-        return self._ler_eventos(ws)
+        # Assina o canal geral e filtra aqui. Assinar cada caminho falhou numa gravação real
+        # feita logo após o cliente abrir: os eventos do ready check nunca chegaram.
+        ws.enviar_texto(json.dumps([5, EVENTO_GERAL]))
+        return self._ler_eventos(ws, frozenset(caminhos))
 
     @staticmethod
-    def _ler_eventos(ws: ClienteWebSocket) -> Iterator[Evento]:
+    def _ler_eventos(ws: ClienteWebSocket, caminhos: frozenset[str]) -> Iterator[Evento]:
         while True:
-            evento = evento_de(ws.receber())
-            if evento is not None:
+            mensagem = ws.receber()
+            # Filtro barato antes do JSON: o canal geral traz eventos de tudo (chat, loja...).
+            if not any(caminho in mensagem for caminho in caminhos):
+                continue
+            evento = evento_de(mensagem)
+            if evento is not None and evento.uri in caminhos:
                 yield evento
 
     def fechar(self) -> None:

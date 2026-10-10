@@ -78,7 +78,7 @@ def test_personalizada_aram(tmp_path):
     assert "2 no banco" in enviadas[0].mensagem
 
 
-@pytest.mark.parametrize("nome", ["personalizada_alternada.jsonl", "personalizada_aram.jsonl"])
+@pytest.mark.parametrize("nome", [p.name for p in (PASTA_FIXTURES / "gravacoes").glob("*.jsonl")])
 def test_gravacoes_estao_anonimizadas(nome):
     texto = (PASTA_FIXTURES / "gravacoes" / nome).read_text(encoding="utf-8")
     for linha in texto.splitlines():
@@ -88,3 +88,29 @@ def test_gravacoes_estao_anonimizadas(nome):
                 assert jogador["gameName"] == "" or jogador["gameName"].startswith("Jogador")
                 assert jogador.get("puuid", "") == "" or jogador["puuid"].startswith("puuid-")
             assert dados.get("chatDetails") == "<removido>"
+
+
+def test_normal_alternada_pela_fila(tmp_path):
+    fase_final, enviadas = reproduzir("normal_alternada.jsonl", tmp_path)
+    assert fase_final is Fase.CARREGANDO
+    assert [n.titulo for n in enviadas] == [
+        "Partida encontrada!",
+        "Seleção começou",
+        "Sua vez de banir!",
+        "Sua vez de escolher!",  # troca de ordem de pick: por 2 s foi o primeiro a escolher
+        "Sua vez de escolher!",  # a vez de verdade
+        "Partida carregando",
+    ]
+    assert enviadas[1].mensagem.startswith("Declare sua intenção de pick. 12 s")
+
+
+def test_dodge_na_finalizacao(tmp_path):
+    # Gravação feita logo após o cliente abrir: sem eventos de ready check (ver lcu.py).
+    fase_final, enviadas = reproduzir("normal_alternada_dodge.jsonl", tmp_path)
+    assert fase_final is Fase.LOBBY
+    assert [n.titulo for n in enviadas] == [
+        "Seleção começou",
+        "Sua vez de banir!",
+        "Sua vez de escolher!",
+        "Alguém deu dodge",
+    ]

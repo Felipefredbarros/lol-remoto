@@ -25,3 +25,4 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ### Corrigido
 - "Sua vez de banir" saía no início do planejamento, e não quando os bans começavam.
 - "Partida encontrada!" saía em partidas personalizadas, que não têm nada para aceitar.
+- Eventos do cliente que não chegavam quando o app conectava logo depois de o cliente abrir: agora o app assina o canal geral de eventos e filtra os que usa.

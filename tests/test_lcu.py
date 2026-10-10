@@ -9,12 +9,12 @@ import pytest
 
 from lol_remoto.plataforma.lcu import (
     FASE,
+    SESSAO_SELECAO,
     ErroLcu,
     Evento,
     LcuHttp,
     contexto_tls,
     evento_de,
-    nome_do_evento,
 )
 from lol_remoto.plataforma.lockfile import Credenciais
 from lol_remoto.plataforma.websocket import TEXTO
@@ -25,10 +25,6 @@ AUTORIZACAO = "Basic " + base64.b64encode(f"riot:{SENHA}".encode()).decode()
 
 
 # ---------- funções puras ----------
-
-
-def test_nome_do_evento():
-    assert nome_do_evento(FASE) == "OnJsonApiEvent_lol-gameflow_v1_gameflow-phase"
 
 
 def test_evento_de_mensagem_wamp():
@@ -156,24 +152,26 @@ def test_cliente_fechado_levanta_erro():
 # ---------- eventos pelo WebSocket ----------
 
 
-def test_eventos_assina_e_entrega(servidor):
+def test_eventos_assina_o_canal_geral_e_filtra_os_caminhos(servidor):
     assinaturas = []
 
+    def evento(uri, dados):
+        corpo = {"data": dados, "eventType": "Update", "uri": uri}
+        return quadro(TEXTO, json.dumps([8, "OnJsonApiEvent", corpo]).encode())
+
     def roteiro(lado):
-        assinaturas.extend(json.loads(lado.ler_quadro()[1]) for _ in range(2))
+        assinaturas.append(json.loads(lado.ler_quadro()[1]))
         lado.enviar(quadro(TEXTO, b'[0,"sessao",1,"WAMP-1.0-RiotRemoting"]'))
-        corpo = {"data": "ReadyCheck", "eventType": "Update", "uri": FASE}
-        lado.enviar(quadro(TEXTO, json.dumps([8, "OnJsonApiEvent", corpo]).encode()))
+        lado.enviar(evento("/lol-chat/v1/conversations", {"x": 1}))  # outro assunto
+        lado.enviar(evento(SESSAO_SELECAO + "/timer", {"x": 2}))  # subcaminho
+        lado.enviar(evento(FASE, "ReadyCheck"))
         lado.ler_quadro()  # espera o close
 
     ws = ServidorWsFalso(roteiro)
     lcu = LcuHttp(Credenciais(ws.porta, SENHA, "http"))
-    eventos = lcu.eventos([FASE, "/lol-champ-select/v1/session"])
+    eventos = lcu.eventos([FASE, SESSAO_SELECAO])
     assert next(eventos) == Evento(uri=FASE, tipo="Update", dados="ReadyCheck")
     lcu.fechar()
     ws.encerrar()
     assert ws.pedido["authorization"] == AUTORIZACAO
-    assert assinaturas == [
-        [5, "OnJsonApiEvent_lol-gameflow_v1_gameflow-phase"],
-        [5, "OnJsonApiEvent_lol-champ-select_v1_session"],
-    ]
+    assert assinaturas == [[5, "OnJsonApiEvent"]]

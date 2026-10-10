@@ -81,6 +81,14 @@ O teste do Felipe numa personalizada e duas gravações (`tests/fixtures/gravaco
 - **Saída da fila:** novo aviso quando a partida encontrada some sem aceite ("Você saiu da fila").
 - `tests/test_gravacoes_reais.py` reproduz as gravações pelo monitor e confere as notificações.
 
+**Fila de verdade (normal alternada, fila 400), duas gravações:**
+- Funcionou de ponta a ponta no celular: partida encontrada → seleção começou → sua vez de banir → sua vez de escolher → carregando.
+- Na normal o planejamento dura 12 s, e os 10 bans ficam "em andamento" ao mesmo tempo (bans simultâneos).
+- A partida encontrada manda um evento por segundo (`timer` de 0 a 10) e dura uns 10 s.
+- Troca de ordem de pick gera um segundo "sua vez de escolher", correto pelos dados.
+- A gravação feita logo após o cliente abrir **não recebeu os eventos do ready check**. Agora o app assina o canal geral `OnJsonApiEvent` e filtra pelo `uri` (ADR 0002). **Falta validar ao vivo** com o cliente aberto.
+- Dodge na finalização vira fixture real (`normal_alternada_dodge.jsonl`).
+
 **A confirmar no ARAM:** o Felipe disse que aparece uma grade de campeões no ARAM. Falta saber se é uma escolha no começo (aí o ARAM também precisa do aviso "sua vez") ou o banco de trocas. A gravação de uma ARAM pela fila responde.
 
 **Pendente com o Felipe:** gravar uma **fila de verdade** (normal ou ranqueada), de preferência numa partida que ele já ia jogar. Ela confirma os dados de ready check, que a personalizada não tem.

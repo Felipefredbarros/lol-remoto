@@ -9,7 +9,8 @@ A API **não é oficial**: a Riot tolera aplicativos de terceiros que a usam, ma
 
 ## Decisão
 - Ler o `lockfile` (pasta configurável; padrão `C:\Riot Games\League of Legends`) a cada 3 s até ele existir; reconectar quando o cliente fecha.
-- Usar o **WebSocket** para eventos (`[5, "OnJsonApiEvent_<caminho>"]` para assinar; chegam como `[8, nome, {data, eventType, uri}]`) e **REST** para o estado inicial e as ações. Assinaturas: `/lol-gameflow/v1/gameflow-phase`, `/lol-champ-select/v1/session`, `/lol-matchmaking/v1/ready-check`.
+- Usar o **WebSocket** para eventos (chegam como `[8, nome, {data, eventType, uri}]`) e **REST** para o estado inicial e as ações. Caminhos usados: `/lol-gameflow/v1/gameflow-phase`, `/lol-champ-select/v1/session`, `/lol-matchmaking/v1/ready-check`.
+- Assinar o **canal geral** (`[5, "OnJsonApiEvent"]`) e filtrar pelo `uri` exato no app. *Atualização (10/2026):* a primeira versão assinava cada caminho (`OnJsonApiEvent_<caminho>`), mas numa gravação real feita logo depois de o cliente abrir os eventos do ready check nunca chegaram. Por garantia, o monitor também lê o ready check e a sessão da seleção por GET quando a fase muda.
 - **Nada dentro da partida.** O app só executa ações nas fases `ReadyCheck` e `ChampSelect`, e toda ação parte de um toque seu no celular. Nada é escolhido ou aceito automaticamente. Ao entrar em `GameStart`, avisa e para.
 
 ## Consequências
