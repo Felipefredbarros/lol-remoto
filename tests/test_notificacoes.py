@@ -142,3 +142,39 @@ def test_mensagem_do_planejamento(montagem, sessao_draft):
     assert notificador.enviadas[-1].mensagem == (
         "Declare sua intenção de pick. 24 s restantes. Toque para abrir."
     )
+
+
+def test_partida_encontrada_tem_botoes_com_token_de_uso_unico():
+    from lol_remoto.servicos.tokens import ServicoTokens
+
+    estado = Estado(ausente=True)
+    notificador = NotificadorFalso()
+    tokens = ServicoTokens()
+    servico = ServicoNotificacoes(estado, notificador, endereco=lambda: ENDERECO, tokens=tokens)
+    estado.atualizar(conectado=True, fase=Fase.FILA)
+    estado.atualizar(fase=Fase.PARTIDA_ENCONTRADA, ready_check=READY)
+    servico.aguardar_envios()
+
+    aceitar, recusar = notificador.enviadas[-1].botoes
+    assert aceitar.rotulo == "Aceitar"
+    assert aceitar.url == "http://100.64.0.1:8766/api/ready-check/aceitar"
+    assert recusar.url == "http://100.64.0.1:8766/api/ready-check/recusar"
+    assert aceitar.corpo == recusar.corpo  # um token só, vale uma vez
+    token = aceitar.corpo["token"]
+
+    estado.atualizar(fase=Fase.SELECAO, ready_check=None)  # a partida passou
+    assert not tokens.consumir(token)
+    servico.encerrar()
+
+
+def test_sem_endereco_nao_ha_botoes():
+    from lol_remoto.servicos.tokens import ServicoTokens
+
+    estado = Estado(ausente=True)
+    notificador = NotificadorFalso()
+    servico = ServicoNotificacoes(estado, notificador, tokens=ServicoTokens())
+    estado.atualizar(conectado=True, fase=Fase.FILA)
+    estado.atualizar(fase=Fase.PARTIDA_ENCONTRADA, ready_check=READY)
+    servico.aguardar_envios()
+    assert notificador.enviadas[-1].botoes == ()
+    servico.encerrar()

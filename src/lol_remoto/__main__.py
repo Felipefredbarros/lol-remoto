@@ -9,7 +9,7 @@ import threading
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from lol_remoto import __version__, comandos, config
+from lol_remoto import __version__, comandos, config, trocar_pin
 from lol_remoto.plataforma.lockfile import PASTA_PADRAO
 from lol_remoto.plataforma.ntfy import NotificadorNtfy
 from lol_remoto.plataforma.rede import descobrir_ip_tailscale
@@ -30,6 +30,9 @@ def _ler_argumentos(argv: list[str] | None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--pasta-lol", type=Path, help="pasta do LoL, onde fica o lockfile (padrão: a do config)"
+    )
+    parser.add_argument(
+        "--trocar-pin", action="store_true", help="define um novo PIN e sai (não inicia o app)"
     )
     parser.add_argument(
         "--ausente",
@@ -135,6 +138,8 @@ def main(argv: list[str] | None = None) -> int:
         return comandos.gravar(args.pasta_lol or PASTA_PADRAO, args.gravar)
     if args.testar_notificacao:
         return comandos.testar_notificacao(args.config)
+    if args.trocar_pin:
+        return trocar_pin.executar(args.config)
     return _executar_app(args)
 
 

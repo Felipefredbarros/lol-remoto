@@ -19,6 +19,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Avisos de planejamento (declare a intenção), campeão do ARAM e saída da fila sem aceite.
 - Gravações reais anonimizadas como fixtures, reproduzidas pelo monitor nos testes.
 - Ações no cliente: aceitar/recusar a partida, declarar intenção, marcar e confirmar ban/pick, reroll e troca do banco no ARAM, sempre conferindo a fase.
+- Sessões de login (só o hash do token fica salvo), tokens de uso único para os botões Aceitar/Recusar da notificação e comando `--trocar-pin`, que encerra todas as sessões.
 
 ### Corrigido
 - "Sua vez de banir" saía no início do planejamento, e não quando os bans começavam.

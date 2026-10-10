@@ -9,11 +9,14 @@ import logging
 import queue
 import threading
 from collections.abc import Callable
+from dataclasses import replace
 
 from lol_remoto.dominio.avisos import Aviso, TipoAviso, avisos
-from lol_remoto.plataforma.ntfy import ErroNotificacao, Notificacao, Notificador
+from lol_remoto.dominio.fase import Fase
+from lol_remoto.plataforma.ntfy import BotaoHttp, ErroNotificacao, Notificacao, Notificador
 from lol_remoto.servicos import mensagens
 from lol_remoto.servicos.estado import Estado, Retrato
+from lol_remoto.servicos.tokens import ServicoTokens
 
 log = logging.getLogger(__name__)
 
@@ -24,17 +27,23 @@ class ServicoNotificacoes:
         estado: Estado,
         notificador: Notificador,
         endereco: Callable[[], str | None] = lambda: None,
+        tokens: ServicoTokens | None = None,
     ) -> None:
-        """`endereco` dá a URL da página no celular (link da notificação), se conhecida."""
+        """`endereco` dá a URL da página no celular, se conhecida. Com ela e `tokens`, a
+        partida encontrada ganha os botões Aceitar/Recusar (docs/decisoes/0005).
+        """
         self._estado = estado
         self._notificador = notificador
         self._endereco = endereco
+        self._tokens = tokens
         self._fila: queue.Queue[Notificacao | None] = queue.Queue()
         self._thread = threading.Thread(target=self._enviar_em_ordem, name="ntfy", daemon=True)
         self._thread.start()
         estado.assinar(self._ao_mudar)
 
     def _ao_mudar(self, anterior: Retrato, atual: Retrato) -> None:
+        if self._tokens and atual.fase is not Fase.PARTIDA_ENCONTRADA:
+            self._tokens.invalidar_todos()  # botões de uma partida que já passou
         if atual.ausente and not anterior.ausente:
             self._enfileirar(
                 Notificacao(
@@ -57,7 +66,18 @@ class ServicoNotificacoes:
                 self._estado.definir_ausente(False)  # dentro da partida, nada de push
 
     def montar(self, aviso: Aviso, retrato: Retrato) -> Notificacao:
-        return mensagens.montar(aviso, retrato.selecao, self._estado.catalogo, self._endereco())
+        endereco = self._endereco()
+        notificacao = mensagens.montar(aviso, retrato.selecao, self._estado.catalogo, endereco)
+        if aviso.tipo is TipoAviso.PARTIDA_ENCONTRADA and endereco and self._tokens:
+            token = self._tokens.gerar()  # o mesmo vale para os dois botões, uma vez só
+            notificacao = replace(
+                notificacao,
+                botoes=(
+                    BotaoHttp("Aceitar", f"{endereco}api/ready-check/aceitar", {"token": token}),
+                    BotaoHttp("Recusar", f"{endereco}api/ready-check/recusar", {"token": token}),
+                ),
+            )
+        return notificacao
 
     def _enfileirar(self, notificacao: Notificacao) -> None:
         self._fila.put(notificacao)

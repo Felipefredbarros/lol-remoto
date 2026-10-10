@@ -14,9 +14,9 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | ✅ | `e9f8282` |
 | 6 | Notificador ntfy + config | ✅ | `3f307b8` |
 | 7 | Monitor, estado, notificações e modo ausente | ✅ | `531a64b`, ajustes `0e327f4` e `6b28178` |
-| 8 | Ações: ready check, pick/ban, ARAM | ✅ (falta validar ao vivo) | (próximo commit `feat`) |
-| 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | 🔄 | |
-| 10 | API HTTP + SSE | ⏳ | |
+| 8 | Ações: ready check, pick/ban, ARAM | ✅ (falta validar ao vivo) | `f409d53` |
+| 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ✅ | (próximo commit `feat`) |
+| 10 | API HTTP + SSE | 🔄 | |
 | 11 | Interface web do celular | ⏳ | |
 | 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ⏳ | |
 | 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ⏳ | |
@@ -94,8 +94,11 @@ Aceitar/recusar, marcar/confirmar campeão, reroll e troca do banco no ARAM. For
 
 **A validar ao vivo (com o Felipe na fila):** aceitar, intenção no planejamento, marcar e confirmar ban/pick, reroll e banco no ARAM.
 
-### 9. Autenticação
+### 9. Autenticação ✅
 PIN + bloqueio por IP, sessões com cookie (só o SHA-256 salvo) e tokens de uso único para os botões da notificação.
+- `servicos/autenticacao.py` (cópia do desligador), `sessoes.py`, `tokens.py` e `trocar_pin.py`.
+- `--trocar-pin` apaga o `sessoes.json`: todos os aparelhos precisam entrar de novo.
+- A notificação de partida encontrada tem os botões Aceitar/Recusar (um token, uma vez). Os tokens deixam de valer quando a fase sai de `ReadyCheck`. No `__main__` eles só entram na etapa 10, junto com a rota que os botões chamam.
 
 ### 10. API + SSE
 Rotas JSON, `/api/eventos` (SSE), ícones dos campeões via LCU e as proteções de `Host`/`Origin`/JSON copiadas do desligador.
