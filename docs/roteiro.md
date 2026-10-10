@@ -9,9 +9,9 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 0 | Reconhecimento ao vivo da LCU (só leitura) | ✅ | — |
 | 1 | Estrutura do projeto (pyproject, ruff, git) | ✅ | `1998026` |
 | 2 | Documentação: CLAUDE.md, arquitetura, ADRs 0001–0008 | ✅ | `2c449e1` |
-| 3 | Domínio: fases, seleção, avisos, campeões, PIN | ✅ | (próximo commit `feat`) |
-| 4 | Cliente WebSocket (stdlib) | 🔄 | |
-| 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | ⏳ | |
+| 3 | Domínio: fases, seleção, avisos, campeões, PIN | ✅ | `545c155` |
+| 4 | Cliente WebSocket (stdlib) | ✅ | (próximo commit `feat`) |
+| 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | 🔄 | |
 | 6 | Notificador ntfy | ⏳ | |
 | 7 | Monitor, estado, notificações e modo ausente | ⏳ | |
 | 8 | Ações: ready check, pick/ban, ARAM | ⏳ | |
@@ -35,8 +35,9 @@ GETs na LCU com o cliente aberto, sem nenhuma ação. Resultados:
 `dominio/fase.py`, `selecao.py`, `avisos.py`, `campeoes.py` e `pin.py` (cópia do desligador), com testes. Por enquanto, as fixtures de sessão (`tests/fixtures/selecao_*.json`) são montadas à mão; na etapa 5 são trocadas por gravações reais.
 - O catálogo real tem 250 campeões, com nomes em pt_BR ("Nunu e Willump"). Ele inclui 77 variantes "Jade_" (ids 60001–60267) com o mesmo nome do campeão normal. A busca mostra um por nome, o de menor id.
 
-### 4. Cliente WebSocket
-RFC 6455 mínimo sobre `ssl`, testado contra um servidor WebSocket falso: quadros grandes, fragmentados, ping/pong e close.
+### 4. Cliente WebSocket ✅
+RFC 6455 mínimo sobre `ssl` (`plataforma/websocket.py`), testado contra um servidor WebSocket falso (`tests/servidor_ws_falso.py`): quadros de 0 a 200 KB, fragmentados com ping no meio, close e queda de conexão.
+- Conferido na LCU real: ao conectar chega a boas-vindas do WAMP `[0, "<sessão>", 1, "WAMP-1.0-RiotRemoting"]`, que deve ser ignorada.
 
 ### 5. Cliente LCU
 Leitura do lockfile, HTTPS com o `riotgames.pem`, assinatura de eventos e reconexão. O `--gravar` salva os eventos reais em `gravacoes/`, pasta ignorada pelo git. O anonimizador gera as fixtures sem `puuid`, IDs ou nomes.
