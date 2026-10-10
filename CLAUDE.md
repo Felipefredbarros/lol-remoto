@@ -62,7 +62,7 @@ cd src; py -m lol_remoto --gravar ..\gravacoes  # grava eventos reais da LCU (pa
 5. **Fixtures anonimizadas.** Gravações da LCU só entram em `tests/fixtures/` depois de passar pelo anonimizador (sem `puuid`, `summonerId`, nomes, tags).
 6. **Não afrouxe as proteções da API** (`api/protecao.py`, JSON no POST, `SameSite=Strict`, timeout, verificação TLS da LCU) sem um ADR explicando o motivo.
 7. **Toda mudança de comportamento vem com teste** em `tests/`. Antes de commitar: `ruff check .`, `ruff format --check .` e `pytest` passando. Nos testes, gere hashes com `gerar_hash(pin, iteracoes=1_000)`.
-8. **Decisão de arquitetura nova → ADR novo** em `docs/decisoes/NNNN-titulo.md`. Atualize o `CHANGELOG.md`.
+8. **Decisão de arquitetura nova → ADR novo** em `docs/decisoes/NNNN-titulo.md`. Atualize o `CHANGELOG.md`. Ao concluir uma etapa, atualize o [docs/roteiro.md](docs/roteiro.md).
 9. **Commits** em português, [Conventional Commits](https://www.conventionalcommits.org/pt-br/): `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`, `ci:`.
 10. **Código e mensagens em português**, nomes descritivos; arquivos pequenos (~150 linhas) e com uma responsabilidade.
 11. **Scripts `.ps1` só com caracteres ASCII** (o Windows PowerShell 5.1 lê arquivos sem BOM como ANSI e quebra acentos).
