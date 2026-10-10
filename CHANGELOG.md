@@ -11,3 +11,5 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Cliente WebSocket próprio (RFC 6455) sobre a biblioteca padrão, para os eventos do cliente do LoL.
 - Cliente da LCU: leitura do lockfile, HTTPS verificado com o certificado da Riot e eventos por WebSocket.
 - Comandos `--gravar` (grava eventos reais da LCU, só escutando) e `--anonimizar` (prepara gravações para virar fixtures).
+- Notificações pelo ntfy, com prioridade, link e botões de ação; comando `--testar-notificacao`.
+- Configuração em `%APPDATA%\LolRemoto\config.json`, criada com PIN e tópico do ntfy aleatórios.

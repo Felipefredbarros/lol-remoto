@@ -12,8 +12,8 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 3 | Domínio: fases, seleção, avisos, campeões, PIN | ✅ | `545c155` |
 | 4 | Cliente WebSocket (stdlib) | ✅ | `e43ff80` |
 | 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | ✅ | `e9f8282` |
-| 6 | Notificador ntfy | 🔄 | |
-| 7 | Monitor, estado, notificações e modo ausente | ⏳ | |
+| 6 | Notificador ntfy + config | ✅ | (próximo commit `feat`) |
+| 7 | Monitor, estado, notificações e modo ausente | 🔄 | |
 | 8 | Ações: ready check, pick/ban, ARAM | ⏳ | |
 | 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ⏳ | |
 | 10 | API HTTP + SSE | ⏳ | |
@@ -52,8 +52,12 @@ cd src; py -m lol_remoto --gravar ..\gravacoes
 py -m lol_remoto --anonimizar ..\gravacoes\gravacao-AAAAMMDD-HHMMSS.jsonl ..\tests\fixtures\gravacoes\draft.jsonl
 ```
 
-### 6. Notificador ntfy
-Publicação em JSON no ntfy.sh com prioridade, link para a página e botões `http`. Comando `--testar-notificacao`.
+### 6. Notificador ntfy ✅
+Publicação em JSON no ntfy.sh com prioridade, link para a página e botões `http` (`plataforma/ntfy.py`). Comando `--testar-notificacao`.
+- O `config.py` entrou aqui, antes da etapa 9, porque o teste precisa do tópico. Na primeira execução ele cria `%APPDATA%\LolRemoto\config.json` com PIN e tópico aleatórios.
+- O tópico e o token do ntfy não aparecem em `repr()`, logs nem mensagens de erro.
+
+**Pendente com o Felipe:** instalar o app ntfy no Android, rodar `cd src; py -m lol_remoto --testar-notificacao`, assinar o tópico mostrado e conferir se a notificação chega.
 
 ### 7. Monitor e estado
 Loop do lockfile → conexão → eventos → `Estado`. Gera avisos nas transições e notifica só com o modo ausente ligado. O modo desliga em `GameStart`.
