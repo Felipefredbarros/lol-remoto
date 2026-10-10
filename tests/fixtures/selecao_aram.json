@@ -1,0 +1,37 @@
+{
+  "_comentario": "Montada à mão (etapa 3). ARAM: sem ações de pick, banco com 2 campeões e 1 reroll. Trocar por gravação real anonimizada na etapa 5.",
+  "localPlayerCellId": 7,
+  "isSpectating": false,
+  "benchEnabled": true,
+  "benchChampions": [
+    { "championId": 22, "isPriority": false },
+    { "championId": 53, "isPriority": false }
+  ],
+  "allowRerolling": true,
+  "rerollsRemaining": 1,
+  "timer": {
+    "adjustedTimeLeftInPhase": 61000,
+    "internalNowInEpochMs": 1791600000000,
+    "isInfinite": false,
+    "phase": "FINALIZATION",
+    "totalTimeInPhase": 63000
+  },
+  "bans": { "myTeamBans": [], "theirTeamBans": [], "numBans": 0 },
+  "myTeam": [
+    { "cellId": 5, "team": 2, "assignedPosition": "", "championId": 1, "championPickIntent": 0, "gameName": "Jogador1", "tagLine": "TESTE", "puuid": "", "summonerId": 0 },
+    { "cellId": 6, "team": 2, "assignedPosition": "", "championId": 51, "championPickIntent": 0, "gameName": "Jogador2", "tagLine": "TESTE", "puuid": "", "summonerId": 0 },
+    { "cellId": 7, "team": 2, "assignedPosition": "", "championId": 36, "championPickIntent": 0, "gameName": "Eu", "tagLine": "TESTE", "puuid": "", "summonerId": 0 },
+    { "cellId": 8, "team": 2, "assignedPosition": "", "championId": 25, "championPickIntent": 0, "gameName": "Jogador4", "tagLine": "TESTE", "puuid": "", "summonerId": 0 },
+    { "cellId": 9, "team": 2, "assignedPosition": "", "championId": 117, "championPickIntent": 0, "gameName": "Jogador5", "tagLine": "TESTE", "puuid": "", "summonerId": 0 }
+  ],
+  "theirTeam": [
+    { "cellId": 0, "team": 1, "assignedPosition": "", "championId": 0, "championPickIntent": 0, "gameName": "", "tagLine": "", "puuid": "", "summonerId": 0 },
+    { "cellId": 1, "team": 1, "assignedPosition": "", "championId": 0, "championPickIntent": 0, "gameName": "", "tagLine": "", "puuid": "", "summonerId": 0 },
+    { "cellId": 2, "team": 1, "assignedPosition": "", "championId": 0, "championPickIntent": 0, "gameName": "", "tagLine": "", "puuid": "", "summonerId": 0 },
+    { "cellId": 3, "team": 1, "assignedPosition": "", "championId": 0, "championPickIntent": 0, "gameName": "", "tagLine": "", "puuid": "", "summonerId": 0 },
+    { "cellId": 4, "team": 1, "assignedPosition": "", "championId": 0, "championPickIntent": 0, "gameName": "", "tagLine": "", "puuid": "", "summonerId": 0 }
+  ],
+  "actions": [],
+  "trades": [],
+  "pickOrderSwaps": []
+}

@@ -9,8 +9,8 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 0 | Reconhecimento ao vivo da LCU (só leitura) | ✅ | — |
 | 1 | Estrutura do projeto (pyproject, ruff, git) | ✅ | `1998026` |
 | 2 | Documentação: CLAUDE.md, arquitetura, ADRs 0001–0008 | ✅ | `2c449e1` |
-| 3 | Domínio: fases, seleção, avisos, campeões, PIN | 🔄 | |
-| 4 | Cliente WebSocket (stdlib) | ⏳ | |
+| 3 | Domínio: fases, seleção, avisos, campeões, PIN | ✅ | (próximo commit `feat`) |
+| 4 | Cliente WebSocket (stdlib) | 🔄 | |
 | 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | ⏳ | |
 | 6 | Notificador ntfy | ⏳ | |
 | 7 | Monitor, estado, notificações e modo ausente | ⏳ | |
@@ -31,8 +31,9 @@ GETs na LCU com o cliente aberto, sem nenhuma ação. Resultados:
 - Locale `pt_BR`: `champion-summary.json` já traz os nomes em português; ícones PNG de ~30 KB via `/lol-game-data/assets/v1/champion-icons/{id}.png`.
 - Fora da fila, `ready-check` e `champ-select/session` respondem 404 (esperado).
 
-### 3. Domínio
-`dominio/fase.py`, `selecao.py`, `avisos.py`, `campeoes.py` e `pin.py` (cópia do desligador), com testes. Por enquanto, as fixtures de sessão são montadas à mão; na etapa 5 são trocadas por gravações reais.
+### 3. Domínio ✅
+`dominio/fase.py`, `selecao.py`, `avisos.py`, `campeoes.py` e `pin.py` (cópia do desligador), com testes. Por enquanto, as fixtures de sessão (`tests/fixtures/selecao_*.json`) são montadas à mão; na etapa 5 são trocadas por gravações reais.
+- O catálogo real tem 250 campeões, com nomes em pt_BR ("Nunu e Willump"). Ele inclui 77 variantes "Jade_" (ids 60001–60267) com o mesmo nome do campeão normal. A busca mostra um por nome, o de menor id.
 
 ### 4. Cliente WebSocket
 RFC 6455 mínimo sobre `ssl`, testado contra um servidor WebSocket falso: quadros grandes, fragmentados, ping/pong e close.
