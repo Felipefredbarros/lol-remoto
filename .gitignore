@@ -17,4 +17,4 @@ config.json
 sessoes.json
 lockfile
 *.log
-gravacoes/
+/gravacoes/
