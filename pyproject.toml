@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lol-remoto"
+version = "0.1.0"
+description = "Controle a fila e a seleção de campeões do League of Legends pelo celular, via Tailscale."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "Felipe F Barros" }]
+# O runtime usa só a biblioteca padrão (ver docs/decisoes/0003-runtime-sem-dependencias.md).
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.urls]
+Repository = "https://github.com/Felipefredbarros/lol-remoto"
+
+[project.scripts]
+lol-remoto = "lol_remoto.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+lol_remoto = ["web/*", "plataforma/riotgames.pem"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]
