@@ -1,0 +1,223 @@
+:root {
+  --fundo: #eef2f7;
+  --cartao: #ffffff;
+  --texto: #0f172a;
+  --texto-suave: #64748b;
+  --borda: #dbe3ee;
+  --primaria: #2563eb;
+  --primaria-texto: #ffffff;
+  --destaque: #a8842c;
+  --perigo: #dc2626;
+  --sucesso: #15803d;
+  --raio: 14px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #0b1220;
+    --cartao: #151f32;
+    --texto: #eef2f7;
+    --texto-suave: #94a3b8;
+    --borda: #2a3a55;
+    --primaria: #3b82f6;
+    --destaque: #c8aa6e;
+    --perigo: #ef4444;
+    --sucesso: #22c55e;
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+}
+.pilha { display: flex; flex-direction: column; gap: 14px; }
+.app > * + * { margin-top: 14px; }
+
+.topo { display: flex; align-items: center; gap: 10px; }
+.topo h1 { font-size: 1.4rem; margin: 0; flex: 1; }
+
+.cartao {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cartao.destaque { border-color: var(--destaque); }
+
+.rotulo {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texto-suave);
+}
+.status-texto { margin: 0; font-size: 1.15rem; font-weight: 600; }
+.dica { margin: 0; font-size: 0.9rem; color: var(--texto-suave); }
+.linha { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.contagem, .timer {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.contagem { font-size: 2.6rem; }
+.timer { font-size: 1.6rem; color: var(--destaque); }
+
+input[type="password"], input[type="search"] {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 1.05rem;
+  color: var(--texto);
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+}
+input:focus-visible, button:focus-visible {
+  outline: 3px solid var(--primaria);
+  outline-offset: 2px;
+}
+
+.grade { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+.botao {
+  min-height: 48px;
+  padding: 12px 16px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--primaria-texto);
+  background: var(--primaria);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.botao:disabled { opacity: 0.55; cursor: default; }
+.botao.grande { min-height: 60px; font-size: 1.15rem; }
+.botao.secundario { color: var(--texto); background: transparent; border: 1px solid var(--borda); }
+.botao.sucesso { background: var(--sucesso); }
+.botao.perigo { background: var(--perigo); }
+.botao.alternar { color: var(--texto); background: transparent; border: 2px solid var(--borda); }
+.botao.alternar[aria-pressed="true"] {
+  color: #111827;
+  background: var(--destaque);
+  border-color: var(--destaque);
+}
+.botao-link {
+  font: inherit;
+  color: var(--texto-suave);
+  background: none;
+  border: 0;
+  padding: 8px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Ícones de campeão (com iniciais quando a imagem não carrega) */
+.avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--texto-suave);
+}
+.avatar.pequeno { width: 32px; height: 32px; font-size: 0.7rem; }
+.avatar.intencao { opacity: 0.45; }
+.avatar.vazio { border-style: dashed; }
+
+.bans { display: flex; flex-wrap: wrap; gap: 6px; min-height: 32px; }
+.bans .avatar { filter: grayscale(1); border-color: var(--perigo); }
+
+.time { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.time li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border-left: 4px solid transparent;
+}
+.time li.agindo { border-left-color: var(--destaque); background: var(--fundo); }
+.time li.eu { font-weight: 700; }
+.time .nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.time .detalhe { display: block; font-size: 0.85rem; font-weight: 400; color: var(--texto-suave); }
+.selo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--borda);
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+.selo.ok { color: var(--sucesso); border-color: var(--sucesso); }
+.selo.vez { color: var(--destaque); border-color: var(--destaque); }
+
+.grade-campeoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 2px;
+}
+.campeao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 2px;
+  font: inherit;
+  font-size: 0.75rem;
+  color: var(--texto);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.campeao span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.campeao[aria-pressed="true"] { border-color: var(--destaque); background: var(--fundo); }
+
+.runa {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  font: inherit;
+  color: var(--texto);
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.runa strong { font-size: 1.05rem; }
+.runa span { font-size: 0.9rem; color: var(--texto-suave); }
+.runa[aria-pressed="true"] { border-color: var(--destaque); }
+
+.mensagem { min-height: 1.4em; margin: 0; text-align: center; }
+.mensagem[data-tipo="erro"] { color: var(--perigo); }
+.mensagem[data-tipo="sucesso"] { color: var(--sucesso); }

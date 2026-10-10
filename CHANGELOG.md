@@ -22,6 +22,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Sessões de login (só o hash do token fica salvo), tokens de uso único para os botões Aceitar/Recusar da notificação e comando `--trocar-pin`, que encerra todas as sessões.
 - API HTTP com login por PIN (cookie de sessão), estado e eventos em tempo real (SSE), lista e ícones de campeões, modo ausente e ações no cliente. Os botões Aceitar/Recusar da notificação funcionam.
 - Runas recomendadas pelo próprio cliente, aplicadas pelo celular na página "LoL Remoto", com os feitiços recomendados e o Flash sempre no D.
+- Página do celular: login, modo ausente, partida encontrada com Aceitar/Recusar, seleção de campeões ao vivo (bans, times, timer, sua vez), grade de campeões com busca e runas recomendadas.
 
 ### Corrigido
 - "Sua vez de banir" saía no início do planejamento, e não quando os bans começavam.

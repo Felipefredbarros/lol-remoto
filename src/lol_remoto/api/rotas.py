@@ -86,7 +86,8 @@ def tratar(metodo: str, caminho: str, corpo: bytes, pedido: Pedido, deps: Depend
         status = next(s for tipo, s in _STATUS_POR_ERRO.items() if isinstance(erro, tipo))
         if status >= 500:
             log.warning("%s %s falhou: %s", metodo, caminho, erro)
-        return Resposta(status, {"erro": str(erro)})
+        # "codigo" deixa a página distinguir erros com o mesmo status (ex.: 409).
+        return Resposta(status, {"erro": str(erro), "codigo": type(erro).__name__})
     except Exception:
         log.exception("Erro inesperado em %s %s", metodo, caminho)
         return Resposta(500, {"erro": "Erro interno no servidor."})

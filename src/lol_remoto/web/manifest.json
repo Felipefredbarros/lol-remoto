@@ -1,0 +1,13 @@
+{
+  "name": "LoL Remoto",
+  "short_name": "LoL Remoto",
+  "description": "Aceite a fila e faça pick/ban do LoL pelo celular.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

@@ -17,9 +17,9 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 8 | Ações: ready check, pick/ban, ARAM | ✅ (falta validar ao vivo) | `f409d53` |
 | 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ✅ | `ee43194` |
 | 10 | API HTTP + SSE | ✅ | `90a4279`, ajuste `a58ecd5` |
-| 10b | Runas recomendadas e feitiços | ✅ (feitiços a validar ao vivo) | (próximo commit `feat`) |
-| 11 | Interface web do celular | 🔄 | |
-| 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ⏳ | |
+| 10b | Runas recomendadas e feitiços | ✅ (feitiços a validar ao vivo) | `ffe9548` |
+| 11 | Interface web do celular | ✅ (falta o Felipe ver no celular) | (próximo commit `feat`) |
+| 12 | `--simular` com roteiro falso (fila → seleção → carregando) | 🔄 | |
 | 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ⏳ | |
 | 14 | CI, README, CHANGELOG e versão 0.1.0 | ⏳ | |
 
@@ -127,8 +127,14 @@ Pedido do Felipe: escolher pelo celular uma das **3 páginas de runas recomendad
 - A assinatura do canal geral de eventos foi validada ao vivo (eventos de lobby chegaram).
 - **Falta validar numa seleção:** os feitiços (`PATCH my-selection`). Ver [ADR 0009](decisoes/0009-runas-recomendadas-na-pagina-lol-remoto.md).
 
-### 11. Interface web
+### 11. Interface web ✅
 Login, modo ausente, tela da seleção (bans, picks, quem está escolhendo, timer), busca e grade de campeões, ARAM e botão "Testar notificação".
+- `web/`: `index.html`, `estilo.css` (claro/escuro, como o desligador, com o dourado do LoL) e módulos JS pequenos: `app.js` (login, SSE, ações), `painel.js` (fase, partida encontrada, modo ausente), `selecao.js` (times, bans, timer, vez), `campeoes.js` (grade com busca, marcar/confirmar), `runas.js`, `api.js` e `util.js`.
+- Partida encontrada: contagem e botões grandes Aceitar/Recusar (recusar pede confirmação).
+- Seleção: a grade aparece na sua vez e no planejamento (para a intenção). No ARAM, só o seu campeão e o time.
+- Runas: aparecem quando você tem campeão. Se não houver página "LoL Remoto", a página pergunta antes de sobrescrever a atual.
+- Sem navegador nesta máquina para conferir o visual: `tests/test_web.py` confere IDs, importações, CSP, ausência de `innerHTML` e o contrato com `api/visao.py`. A sintaxe do JS foi conferida com esprima.
+- A API passou a mandar `codigo` (nome do erro) junto com `erro`, para a página distinguir erros com o mesmo status.
 
 ### 12. Simulação
 `--simular`: `LcuFalsa` percorre fila → ready check → seleção → carregamento, para testar o celular sem abrir o LoL.
