@@ -10,13 +10,18 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 ## Mapa do código (`src/lol_remoto/`)
 | Camada | Módulo | Responsabilidade |
 |---|---|---|
-| entrada | `__main__.py` | Argumentos, log, monta dependências, sobe servidores e o monitor |
+| entrada | `__main__.py` | Argumentos, log e escolha do comando |
+| entrada | `app.py` | Composição: monta estado, monitor, notificações e servidores, e os executa |
 | entrada | `trocar_pin.py` | Comando `--trocar-pin` (console, `getpass`) |
 | entrada | `comandos.py` | Comandos avulsos: `--gravar`, `--anonimizar`, `--testar-notificacao` |
 | entrada | `gravacao.py` | Comando `--gravar`: grava eventos reais da LCU em JSONL (só escuta) |
 | entrada | `anonimizador.py` | Comando `--anonimizar`: tira nomes, ids e segredos de uma gravação |
 | config | `config.py` | Lê/cria `%APPDATA%\LolRemoto\config.json` (`pin_hash`, porta, ntfy, pasta do LoL) |
-| api | `api/rotas.py` | Rotas JSON, `Dependencias`, mapeamento exceção → status HTTP |
+| api | `api/rotas.py` | Registro das rotas (`ROTAS`) e mapeamento exceção → status HTTP |
+| api | `api/rotas_painel.py` | Login, estado, modo ausente, lista de campeões, teste de notificação |
+| api | `api/rotas_cliente.py` | Rotas que agem no cliente: aceitar/recusar, marcar/confirmar, ARAM |
+| api | `api/tipos.py` | `Pedido`, `Resposta`, `Dependencias`, erros comuns, exigência de sessão |
+| api | `api/visao.py` | Estado → JSON da página (nomes, posições, tempos restantes) |
 | api | `api/servidor.py` | Transporte HTTP (stdlib), estáticos, cookie de sessão, timeout, cabeçalhos |
 | api | `api/sse.py` | Stream `text/event-stream` do estado (`/api/eventos`) |
 | api | `api/protecao.py` | Validação de `Host`/`Origin` (CSRF e DNS rebinding) |
@@ -28,6 +33,7 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 | serviços | `servicos/autenticacao.py` | PIN × hash + bloqueio por IP |
 | serviços | `servicos/sessoes.py` | Tokens de sessão do cookie (só o SHA-256 fica salvo) |
 | serviços | `servicos/tokens.py` | Tokens de uso único dos botões da notificação |
+| serviços | `servicos/icones.py` | Ícones dos campeões via LCU, com cache em memória |
 | domínio | `dominio/fase.py` | Fases do gameflow, transições e “pode agir?” |
 | domínio | `dominio/selecao.py` | JSON da sessão de seleção → `Selecao` (times, bans, ação atual, timer) |
 | domínio | `dominio/avisos.py` | Regras de quando avisar (ready check, sua vez, dodge, carregando) |
@@ -42,7 +48,7 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 | plataforma | `plataforma/rede.py` | Descobre o IP do Tailscale |
 | web | `web/` | Interface do celular (HTML/CSS/JS puro, sem build) |
 
-**Regra de dependência:** `__main__` → `api` → `servicos` → `dominio` / `plataforma`. Nunca o contrário. `dominio` não importa nada do projeto. Só `__main__.py` escolhe implementações concretas.
+**Regra de dependência:** `__main__`/`app` → `api` → `servicos` → `dominio` / `plataforma`. Nunca o contrário. `dominio` não importa nada do projeto. Só `__main__.py` e `app.py` escolhem implementações concretas.
 
 ## Comandos
 ```powershell
@@ -77,7 +83,7 @@ cd src; py -m lol_remoto --anonimizar ..\gravacoes\x.jsonl ..\tests\fixtures\gra
 ## Como adicionar uma nova ação na seleção (ex.: trocar feitiço)
 1. `plataforma/lcu.py`: nada, se for só um `PATCH`/`POST` genérico; senão, método novo no `Protocol Lcu`, em `LcuHttp` e em `LcuFalsa`.
 2. `servicos/acoes.py`: método que confere a fase (`exigir_fase`) e chama a LCU.
-3. `api/rotas.py`: função de rota + registro em `ROTAS` (exceções novas em `_STATUS_POR_ERRO`).
+3. `api/rotas_cliente.py`: função de rota; registro em `ROTAS` de `api/rotas.py` (exceções novas em `_STATUS_POR_ERRO`).
 4. `web/`: botão chamando a rota.
 5. Testes em `tests/test_acoes.py` e `tests/test_api.py`; atualizar `README.md` e `CHANGELOG.md`.
 

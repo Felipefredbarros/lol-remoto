@@ -20,6 +20,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Gravações reais anonimizadas como fixtures, reproduzidas pelo monitor nos testes.
 - Ações no cliente: aceitar/recusar a partida, declarar intenção, marcar e confirmar ban/pick, reroll e troca do banco no ARAM, sempre conferindo a fase.
 - Sessões de login (só o hash do token fica salvo), tokens de uso único para os botões Aceitar/Recusar da notificação e comando `--trocar-pin`, que encerra todas as sessões.
+- API HTTP com login por PIN (cookie de sessão), estado e eventos em tempo real (SSE), lista e ícones de campeões, modo ausente e ações no cliente. Os botões Aceitar/Recusar da notificação funcionam.
 
 ### Corrigido
 - "Sua vez de banir" saía no início do planejamento, e não quando os bans começavam.

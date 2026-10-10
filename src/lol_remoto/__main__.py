@@ -10,12 +10,8 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from lol_remoto import __version__, comandos, config, trocar_pin
+from lol_remoto.app import App
 from lol_remoto.plataforma.lockfile import PASTA_PADRAO
-from lol_remoto.plataforma.ntfy import NotificadorNtfy
-from lol_remoto.plataforma.rede import descobrir_ip_tailscale
-from lol_remoto.servicos.estado import Estado
-from lol_remoto.servicos.monitor import Monitor
-from lol_remoto.servicos.notificacoes import ServicoNotificacoes
 
 log = logging.getLogger("lol_remoto")
 
@@ -80,25 +76,6 @@ def _configurar_log(verbose: bool) -> Path:
     return arquivo
 
 
-class _Endereco:
-    """URL da página para o celular. O IP do Tailscale é descoberto uma vez, em segundo plano."""
-
-    def __init__(self, fixo: str | None, porta: int) -> None:
-        self._fixo = fixo
-        self._porta = porta
-        self._ip: str | None = None
-        if not fixo:
-            threading.Thread(target=self._descobrir, daemon=True).start()
-
-    def _descobrir(self) -> None:
-        self._ip = descobrir_ip_tailscale()
-
-    def __call__(self) -> str | None:
-        if self._fixo:
-            return self._fixo.rstrip("/") + "/"
-        return f"http://{self._ip}:{self._porta}/" if self._ip else None
-
-
 def _executar_app(args: argparse.Namespace) -> int:
     arquivo_log = _configurar_log(args.verbose)
     log.info("LoL Remoto %s iniciando (log em %s)", __version__, arquivo_log)
@@ -106,28 +83,24 @@ def _executar_app(args: argparse.Namespace) -> int:
     if cfg is None:
         log.error("Configuração inválida em %s", args.config)
         return 1
-
-    estado = Estado(ausente=args.ausente)
-    notificacoes = ServicoNotificacoes(
-        estado,
-        NotificadorNtfy(cfg.ntfy_servidor, cfg.ntfy_topico, cfg.ntfy_token),
-        endereco=_Endereco(cfg.endereco_publico, cfg.porta),
-    )
-    monitor = Monitor(estado, args.pasta_lol or Path(cfg.pasta_lol))
     if args.ausente:
         log.info("Modo ausente ligado desde o início (--ausente)")
 
-    threading.Thread(target=monitor.executar, name="monitor", daemon=True).start()
+    app = App(
+        cfg,
+        pasta_lol=args.pasta_lol or Path(cfg.pasta_lol),
+        arquivo_sessoes=args.config.with_name(trocar_pin.ARQUIVO_SESSOES),
+        ausente=args.ausente,
+    )
     parar = threading.Event()
     try:
-        # Espera com timeout para o Ctrl+C funcionar no Windows.
-        while not parar.wait(1):
-            pass
+        return app.executar(parar)
     except KeyboardInterrupt:
         log.info("Encerrando")
-    monitor.encerrar()
-    notificacoes.encerrar()
-    return 0
+        parar.set()
+        app.monitor.encerrar()
+        app.notificacoes.encerrar()
+        return 0
 
 
 def main(argv: list[str] | None = None) -> int:

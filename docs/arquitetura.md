@@ -87,6 +87,25 @@ O token não dá acesso a mais nada: não abre sessão nem serve para pick/ban. 
 
 No ARAM não há ação de pick. A tela mostra o seu campeão e o banco, com **Reroll** (`POST .../session/my-selection/reroll`) e **Pegar do banco** (`POST .../session/bench/swap/{id}`).
 
+## API
+
+| Rota | Sessão? | Função |
+|---|---|---|
+| `POST /api/entrar` `{pin}` | — | Confere o PIN e cria o cookie `lolremoto_sessao` |
+| `POST /api/sair` | — | Encerra a sessão |
+| `GET /api/estado` | sim | Estado atual (mesmo JSON do SSE, montado em `api/visao.py`) |
+| `GET /api/eventos` | sim | Stream SSE: o estado a cada mudança + heartbeat |
+| `GET /api/campeoes?tipo=ban\|pick` | sim | Campeões disponíveis agora, em ordem alfabética |
+| `GET /api/campeoes/<id>.png` | sim | Ícone do campeão (via LCU, em cache) |
+| `POST /api/ausente` `{ativo}` | sim | Liga/desliga o modo ausente |
+| `POST /api/testar-notificacao` | sim | Manda uma notificação de teste |
+| `POST /api/ready-check/aceitar` e `/recusar` | sim **ou** `{token}` | Responde à partida encontrada |
+| `POST /api/selecao/marcar` `{campeao}` | sim | Hover na sua vez; intenção no planejamento |
+| `POST /api/selecao/confirmar` `{campeao?}` | sim | Trava o ban/pick |
+| `POST /api/selecao/aram/reroll` e `/trocar` `{campeao}` | sim | ARAM |
+
+Status: 400 (entrada inválida), 401 (sem sessão/PIN), 409 (fora de fase ou não é a sua vez), 429 (bloqueio), 502 (LCU/ntfy recusou), 503 (cliente fechado).
+
 ## Segurança
 
 Herdada do desligador (ver o [ADR 0004 de lá](https://github.com/Felipefredbarros/desligador/blob/main/docs/decisoes/0004-pin-com-hash-e-protecao-csrf.md)), com o que muda aqui:

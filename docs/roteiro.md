@@ -15,9 +15,9 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 6 | Notificador ntfy + config | ✅ | `3f307b8` |
 | 7 | Monitor, estado, notificações e modo ausente | ✅ | `531a64b`, ajustes `0e327f4` e `6b28178` |
 | 8 | Ações: ready check, pick/ban, ARAM | ✅ (falta validar ao vivo) | `f409d53` |
-| 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ✅ | (próximo commit `feat`) |
-| 10 | API HTTP + SSE | 🔄 | |
-| 11 | Interface web do celular | ⏳ | |
+| 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ✅ | `ee43194` |
+| 10 | API HTTP + SSE | ✅ | (próximo commit `feat`) |
+| 11 | Interface web do celular | 🔄 | |
 | 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ⏳ | |
 | 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ⏳ | |
 | 14 | CI, README, CHANGELOG e versão 0.1.0 | ⏳ | |
@@ -100,8 +100,12 @@ PIN + bloqueio por IP, sessões com cookie (só o SHA-256 salvo) e tokens de uso
 - `--trocar-pin` apaga o `sessoes.json`: todos os aparelhos precisam entrar de novo.
 - A notificação de partida encontrada tem os botões Aceitar/Recusar (um token, uma vez). Os tokens deixam de valer quando a fase sai de `ReadyCheck`. No `__main__` eles só entram na etapa 10, junto com a rota que os botões chamam.
 
-### 10. API + SSE
+### 10. API + SSE ✅
 Rotas JSON, `/api/eventos` (SSE), ícones dos campeões via LCU e as proteções de `Host`/`Origin`/JSON copiadas do desligador.
+- Tabela de rotas em `docs/arquitetura.md`. A composição saiu do `__main__` para o `app.py`.
+- Os botões Aceitar/Recusar da notificação passam a funcionar: o `app.py` liga os tokens às notificações.
+- Testes de ponta a ponta com servidor real (`tests/api_falsa.py`): login, cookie, proteções, trava de fase, tokens, SSE e ícones.
+- Conferido com o app completo: login, estado, SSE e o servidor no IP do Tailscale.
 
 ### 11. Interface web
 Login, modo ausente, tela da seleção (bans, picks, quem está escolhendo, timer), busca e grade de campeões, ARAM e botão "Testar notificação".
