@@ -35,13 +35,14 @@ def _recomendacao(principal, nome, descricao, secundario, runas, feiticos) -> di
     }
 
 
-# As mesmas 3 recomendações para qualquer campeão (a simulação não precisa de mais).
+# As mesmas 3 recomendações para qualquer campeão, marcadas como exemplo na página
+# (no cliente real elas dependem do campeão e da posição).
 RUNAS_RECOMENDADAS = [
-    _recomendacao(8100, "Eletrocutar", "Dano de combo", 8200,
+    _recomendacao(8100, "Eletrocutar", "Exemplo da simulação", 8200,
                   [8112, 8139, 8140, 8106, 8226, 8210, 5005, 5008, 5001], [4, 14]),
-    _recomendacao(8100, "Eletrocutar", "Dano de combo", 8300,
+    _recomendacao(8100, "Eletrocutar", "Exemplo da simulação", 8300,
                   [8112, 8139, 8140, 8106, 8345, 8347, 5005, 5008, 5001], [4, 14]),
-    _recomendacao(8200, "Invocar Aery", "Dano de poke", 8000,
+    _recomendacao(8200, "Invocar Aery", "Exemplo da simulação", 8000,
                   [8214, 8226, 8210, 8237, 9111, 8014, 5005, 5008, 5001], [12, 4]),
 ]  # fmt: skip
 
