@@ -10,9 +10,9 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 1 | Estrutura do projeto (pyproject, ruff, git) | ✅ | `1998026` |
 | 2 | Documentação: CLAUDE.md, arquitetura, ADRs 0001–0008 | ✅ | `2c449e1` |
 | 3 | Domínio: fases, seleção, avisos, campeões, PIN | ✅ | `545c155` |
-| 4 | Cliente WebSocket (stdlib) | ✅ | (próximo commit `feat`) |
-| 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | 🔄 | |
-| 6 | Notificador ntfy | ⏳ | |
+| 4 | Cliente WebSocket (stdlib) | ✅ | `e43ff80` |
+| 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | ✅ | `e9f8282` |
+| 6 | Notificador ntfy | 🔄 | |
 | 7 | Monitor, estado, notificações e modo ausente | ⏳ | |
 | 8 | Ações: ready check, pick/ban, ARAM | ⏳ | |
 | 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ⏳ | |
@@ -39,10 +39,18 @@ GETs na LCU com o cliente aberto, sem nenhuma ação. Resultados:
 RFC 6455 mínimo sobre `ssl` (`plataforma/websocket.py`), testado contra um servidor WebSocket falso (`tests/servidor_ws_falso.py`): quadros de 0 a 200 KB, fragmentados com ping no meio, close e queda de conexão.
 - Conferido na LCU real: ao conectar chega a boas-vindas do WAMP `[0, "<sessão>", 1, "WAMP-1.0-RiotRemoting"]`, que deve ser ignorada.
 
-### 5. Cliente LCU
+### 5. Cliente LCU ✅
 Leitura do lockfile, HTTPS com o `riotgames.pem`, assinatura de eventos e reconexão. O `--gravar` salva os eventos reais em `gravacoes/`, pasta ignorada pelo git. O anonimizador gera as fixtures sem `puuid`, IDs ou nomes.
 
-**Depende do Felipe:** gravar uma normal alternada (ou ranqueada) e uma ARAM jogando normalmente. A gravação para no carregamento, então não é preciso jogar nem kitar. Uma personalizada também serve, porque sair dela não tem punição.
+- Conferido no cliente real: certificado empacotado, assinatura e GETs funcionando.
+- `LcuFalsa` (`plataforma/lcu_falsa.py`): `emitir()` simula eventos e também atualiza o GET daquele caminho.
+- O anonimizador confere no fim se algum nome original sobrou na saída; se sobrou, não grava nada.
+
+**Pendente com o Felipe (não bloqueia as próximas etapas):** gravar uma normal alternada (ou ranqueada) e uma ARAM jogando normalmente. A gravação para no carregamento, então não é preciso jogar nem kitar. Uma personalizada também serve, porque sair dela não tem punição.
+```powershell
+cd src; py -m lol_remoto --gravar ..\gravacoes
+py -m lol_remoto --anonimizar ..\gravacoes\gravacao-AAAAMMDD-HHMMSS.jsonl ..\tests\fixtures\gravacoes\draft.jsonl
+```
 
 ### 6. Notificador ntfy
 Publicação em JSON no ntfy.sh com prioridade, link para a página e botões `http`. Comando `--testar-notificacao`.

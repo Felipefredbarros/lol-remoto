@@ -12,6 +12,8 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 |---|---|---|
 | entrada | `__main__.py` | Argumentos, log, monta dependências, sobe servidores e o monitor |
 | entrada | `trocar_pin.py` | Comando `--trocar-pin` (console, `getpass`) |
+| entrada | `gravacao.py` | Comando `--gravar`: grava eventos reais da LCU em JSONL (só escuta) |
+| entrada | `anonimizador.py` | Comando `--anonimizar`: tira nomes, ids e segredos de uma gravação |
 | config | `config.py` | Lê/cria `%APPDATA%\LolRemoto\config.json` (`pin_hash`, porta, ntfy, pasta do LoL) |
 | api | `api/rotas.py` | Rotas JSON, `Dependencias`, mapeamento exceção → status HTTP |
 | api | `api/servidor.py` | Transporte HTTP (stdlib), estáticos, cookie de sessão, timeout, cabeçalhos |
@@ -52,6 +54,7 @@ cd src; py -m lol_remoto --simular --config $env:TEMP\teste.json   # sem mexer n
 cd src; py -m lol_remoto --trocar-pin     # define um novo PIN
 cd src; py -m lol_remoto --testar-notificacao   # manda uma notificação de teste ao celular
 cd src; py -m lol_remoto --gravar ..\gravacoes  # grava eventos reais da LCU (para fixtures)
+cd src; py -m lol_remoto --anonimizar ..\gravacoes\x.jsonl ..\tests\fixtures\gravacoes\x.jsonl
 ```
 
 ## Regras
