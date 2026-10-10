@@ -11,7 +11,8 @@ from pathlib import Path
 
 from lol_remoto import __version__, comandos, config, trocar_pin
 from lol_remoto.app import App
-from lol_remoto.plataforma.lockfile import PASTA_PADRAO
+from lol_remoto.plataforma.lcu_simulada import LcuSimulada
+from lol_remoto.plataforma.lockfile import PASTA_PADRAO, Credenciais
 
 log = logging.getLogger("lol_remoto")
 
@@ -26,6 +27,11 @@ def _ler_argumentos(argv: list[str] | None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--pasta-lol", type=Path, help="pasta do LoL, onde fica o lockfile (padrão: a do config)"
+    )
+    parser.add_argument(
+        "--simular",
+        action="store_true",
+        help="usa um cliente do LoL simulado (fila, partida encontrada e seleção com bots)",
     )
     parser.add_argument(
         "--trocar-pin", action="store_true", help="define um novo PIN e sai (não inicia o app)"
@@ -86,18 +92,32 @@ def _executar_app(args: argparse.Namespace) -> int:
     if args.ausente:
         log.info("Modo ausente ligado desde o início (--ausente)")
 
+    simulada = None
+    extras = {}
+    if args.simular:
+        log.warning("Modo simulação: o cliente do LoL é falso (o real não é tocado)")
+        simulada = LcuSimulada()
+        extras = {
+            "conectar": lambda credenciais: simulada,
+            "ler_credenciais": lambda: Credenciais(porta=1, senha="simulacao", protocolo="http"),
+        }
     app = App(
         cfg,
         pasta_lol=args.pasta_lol or Path(cfg.pasta_lol),
         arquivo_sessoes=args.config.with_name(trocar_pin.ARQUIVO_SESSOES),
         ausente=args.ausente,
+        **extras,
     )
+    if simulada is not None:
+        simulada.iniciar()
     parar = threading.Event()
     try:
         return app.executar(parar)
     except KeyboardInterrupt:
         log.info("Encerrando")
         parar.set()
+        if simulada is not None:
+            simulada.encerrar()
         app.monitor.encerrar()
         app.notificacoes.encerrar()
         return 0

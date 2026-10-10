@@ -44,9 +44,12 @@ class Monitor:
         pasta_lol: Path,
         conectar: Callable[[Credenciais], Lcu] = LcuHttp,
         intervalo: float = INTERVALO_LOCKFILE,
+        ler_credenciais: Callable[[], Credenciais | None] | None = None,
     ) -> None:
+        """`ler_credenciais` substitui a leitura do lockfile (usado no `--simular`)."""
         self._estado = estado
         self._pasta_lol = pasta_lol
+        self._ler_credenciais = ler_credenciais or (lambda: lockfile.ler(pasta_lol))
         self._conectar = conectar
         self._intervalo = intervalo
         self._parar = threading.Event()
@@ -68,7 +71,7 @@ class Monitor:
         avisou = False
         while not self._parar.is_set():
             try:
-                credenciais = lockfile.ler(self._pasta_lol)
+                credenciais = self._ler_credenciais()
             except LockfileInvalido as erro:
                 log.warning("Lockfile inválido: %s", erro)
                 credenciais = None
@@ -144,6 +147,10 @@ class Monitor:
                 return  # sobra de uma seleção que já acabou
             mudancas = {"selecao": None if apagado else self._ler_selecao(evento.dados)}
         elif evento.uri == READY_CHECK:
+            if apagado and self._estado.atual.fase is Fase.PARTIDA_ENCONTRADA:
+                # Guarda a última resposta até a fase mudar (é ela que diz se você saiu da
+                # fila sem aceitar); a mudança de fase limpa o ready check logo depois.
+                return
             mudancas = {"ready_check": None if apagado else ready_check_de(evento.dados)}
         else:
             return

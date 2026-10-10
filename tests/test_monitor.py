@@ -161,3 +161,23 @@ def test_erro_da_lcu_no_estado_inicial_reconecta(tmp_path, monkeypatch):
     esperar(lambda: c.estado.atual.conectado)
     assert len(c.conexoes) == 2
     c.encerrar()
+
+
+def test_ready_check_apagado_antes_da_fase_mudar_e_mantido(cenario):
+    lcu, estado = cenario.lcu, cenario.estado
+    lcu.emitir(FASE, "ReadyCheck")
+    lcu.emitir(READY_CHECK, READY)
+    esperar(lambda: estado.atual.ready_check is not None)
+    lcu.emitir(READY_CHECK, None, tipo="Delete")
+    lcu.emitir(FASE, "Lobby")
+    esperar(lambda: estado.atual.fase is Fase.LOBBY)
+    assert estado.atual.ready_check is None
+
+
+def test_ready_check_apagado_nao_some_antes_da_mudanca_de_fase(cenario):
+    lcu, estado = cenario.lcu, cenario.estado
+    lcu.emitir(FASE, "ReadyCheck")
+    lcu.emitir(READY_CHECK, READY)
+    lcu.emitir(READY_CHECK, None, tipo="Delete")
+    lcu.aguardar_consumo()
+    assert estado.atual.ready_check is not None

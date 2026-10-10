@@ -23,8 +23,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - API HTTP com login por PIN (cookie de sessão), estado e eventos em tempo real (SSE), lista e ícones de campeões, modo ausente e ações no cliente. Os botões Aceitar/Recusar da notificação funcionam.
 - Runas recomendadas pelo próprio cliente, aplicadas pelo celular na página "LoL Remoto", com os feitiços recomendados e o Flash sempre no D.
 - Página do celular: login, modo ausente, partida encontrada com Aceitar/Recusar, seleção de campeões ao vivo (bans, times, timer, sua vez), grade de campeões com busca e runas recomendadas.
+- Opção `--simular`: cliente do LoL simulado com bots (fila, partida encontrada, seleção, dodge) para testar o celular sem abrir o jogo.
 
 ### Corrigido
 - "Sua vez de banir" saía no início do planejamento, e não quando os bans começavam.
 - "Partida encontrada!" saía em partidas personalizadas, que não têm nada para aceitar.
 - Eventos do cliente que não chegavam quando o app conectava logo depois de o cliente abrir: agora o app assina o canal geral de eventos e filtra os que usa.
+- O aviso "você saiu da fila" se perdia se o cliente apagasse o ready check antes de mudar de fase.

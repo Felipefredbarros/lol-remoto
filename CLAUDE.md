@@ -45,7 +45,10 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 | plataforma | `plataforma/lockfile.py` | Lê o lockfile do cliente (porta e senha, que mudam a cada abertura) |
 | plataforma | `plataforma/websocket.py` | Cliente WebSocket mínimo (RFC 6455) sobre `ssl` |
 | plataforma | `plataforma/lcu.py` | `Lcu` (Protocol), `LcuHttp` (HTTPS + eventos), TLS com `riotgames.pem` |
-| plataforma | `plataforma/lcu_falsa.py` | `LcuFalsa` para testes e roteiro do `--simular` |
+| plataforma | `plataforma/lcu_falsa.py` | `LcuFalsa`: LCU em memória para testes |
+| plataforma | `plataforma/lcu_simulada.py` | `LcuSimulada` do `--simular`: fila, partida encontrada e o ciclo |
+| plataforma | `plataforma/simulacao_selecao.py` | Seleção simulada com 9 bots; reage às ações da página |
+| plataforma | `plataforma/simulacao.py` | Dados da simulação: campeões, runas e a sessão inicial |
 | plataforma | `plataforma/ntfy.py` | `Notificador` (Protocol), `NotificadorNtfy`, `NotificadorFalso` |
 | plataforma | `plataforma/rede.py` | Descobre o IP do Tailscale |
 | web | `web/` | Interface do celular (HTML/CSS/JS puro, sem build) |
@@ -60,7 +63,7 @@ py -m venv .venv
 .venv\Scripts\python -m pytest            # testes
 .venv\Scripts\ruff check . ; .venv\Scripts\ruff format .   # lint + formatação
 
-cd src; py -m lol_remoto --simular        # cliente LoL falso com roteiro (http://localhost:8766)
+cd src; py -m lol_remoto --simular        # cliente LoL simulado com bots (http://localhost:8766)
 cd src; py -m lol_remoto --simular --config $env:TEMP\teste.json   # sem mexer no config real
 cd src; py -m lol_remoto --trocar-pin     # define um novo PIN
 cd src; py -m lol_remoto --testar-notificacao   # manda uma notificação de teste ao celular

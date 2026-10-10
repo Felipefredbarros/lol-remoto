@@ -44,11 +44,14 @@ class App:
         ausente: bool = False,
         conectar: Callable[[Credenciais], Lcu] = LcuHttp,
         notificador: Notificador | None = None,
+        ler_credenciais: Callable[[], Credenciais | None] | None = None,
     ) -> None:
         self._cfg = cfg
         self._ip_tailscale: str | None = None
         self.estado = Estado(ausente=ausente)
-        self.monitor = Monitor(self.estado, pasta_lol, conectar=conectar)
+        self.monitor = Monitor(
+            self.estado, pasta_lol, conectar=conectar, ler_credenciais=ler_credenciais
+        )
         self.notificador = notificador or NotificadorNtfy(
             cfg.ntfy_servidor, cfg.ntfy_topico, cfg.ntfy_token
         )

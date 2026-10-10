@@ -18,8 +18,8 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ✅ | `ee43194` |
 | 10 | API HTTP + SSE | ✅ | `90a4279`, ajuste `a58ecd5` |
 | 10b | Runas recomendadas e feitiços | ✅ (feitiços a validar ao vivo) | `ffe9548` |
-| 11 | Interface web do celular | ✅ (falta o Felipe ver no celular) | (próximo commit `feat`) |
-| 12 | `--simular` com roteiro falso (fila → seleção → carregando) | 🔄 | |
+| 11 | Interface web do celular | ✅ (falta o Felipe ver no celular) | `0b1ee5b` |
+| 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ✅ | (próximo commit `feat`) |
 | 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ⏳ | |
 | 14 | CI, README, CHANGELOG e versão 0.1.0 | ⏳ | |
 
@@ -136,8 +136,22 @@ Login, modo ausente, tela da seleção (bans, picks, quem está escolhendo, time
 - Sem navegador nesta máquina para conferir o visual: `tests/test_web.py` confere IDs, importações, CSP, ausência de `innerHTML` e o contrato com `api/visao.py`. A sintaxe do JS foi conferida com esprima.
 - A API passou a mandar `codigo` (nome do erro) junto com `erro`, para a página distinguir erros com o mesmo status.
 
-### 12. Simulação
-`--simular`: `LcuFalsa` percorre fila → ready check → seleção → carregamento, para testar o celular sem abrir o LoL.
+### 12. Simulação ✅
+`--simular`: um cliente do LoL simulado percorre fila → partida encontrada → seleção → carregamento, para testar o celular sem abrir o LoL.
+- Ciclo: lobby (3 s) → fila (6 s) → partida encontrada (até 10 s; se você não aceitar, sai da fila) → planejamento (10 s) → bans simultâneos (20 s) → picks em 6 turnos (20 s cada) → finalização (8 s) → carregando → em partida (15 s) → fim de jogo → de novo. A cada 3 ciclos alguém dá dodge na finalização.
+- Você é o meio (célula 2). Os outros 9 são bots que agem em 2 a 5 s. Se o tempo acabar, o cliente simulado trava o que estiver marcado (ou sorteia o pick).
+- Reage à página: aceitar/recusar, intenção, marcar/confirmar, runas (página "LoL Remoto") e feitiços. Não há ícones (a página mostra as iniciais).
+- As notificações são reais (ntfy) quando o modo ausente está ligado, então dá para testar os botões Aceitar/Recusar no celular.
+- `tests/test_simulacao.py` roda o ciclo acelerado (1 s = 20 ms) com um jogador automático. Testei também com o servidor completo e um "celular falso" por HTTP.
+- Bug achado no teste manual e corrigido: marcar a intenção encerrava o planejamento na hora.
+- Também nesta etapa: se o cliente apagar o ready check antes de mudar de fase, o monitor guarda a última resposta até a fase mudar. Assim o aviso "você saiu da fila" não se perde.
+
+**Para o Felipe testar no celular (sem abrir o LoL):**
+```powershell
+cd C:\Users\felip\Documents\lol-remoto\src
+py -m lol_remoto --simular
+```
+No celular (Tailscale ligado), abra `http://<IP do Tailscale do PC>:8766` (aparece no log como "Ouvindo em ...") e entre com o PIN. Ligue o modo ausente para receber as notificações com os botões. Para parar: `Ctrl+C`.
 
 ### 13. Instalação
 `instalar.ps1`/`desinstalar.ps1`: tarefa "LoL Remoto", firewall 8766 só para `100.64.0.0/10`, PIN, tópico do ntfy e o endereço para o celular.
