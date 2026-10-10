@@ -13,9 +13,9 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 4 | Cliente WebSocket (stdlib) | ✅ | `e43ff80` |
 | 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | ✅ | `e9f8282` |
 | 6 | Notificador ntfy + config | ✅ | `3f307b8` |
-| 7 | Monitor, estado, notificações e modo ausente | ✅ | `531a64b`, ajustes no próximo commit `fix` |
-| 8 | Ações: ready check, pick/ban, ARAM | ⏳ | |
-| 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ⏳ | |
+| 7 | Monitor, estado, notificações e modo ausente | ✅ | `531a64b`, ajustes `0e327f4` e `6b28178` |
+| 8 | Ações: ready check, pick/ban, ARAM | ✅ (falta validar ao vivo) | (próximo commit `feat`) |
+| 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | 🔄 | |
 | 10 | API HTTP + SSE | ⏳ | |
 | 11 | Interface web do celular | ⏳ | |
 | 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ⏳ | |
@@ -81,10 +81,18 @@ O teste do Felipe numa personalizada e duas gravações (`tests/fixtures/gravaco
 - **Saída da fila:** novo aviso quando a partida encontrada some sem aceite ("Você saiu da fila").
 - `tests/test_gravacoes_reais.py` reproduz as gravações pelo monitor e confere as notificações.
 
+**A confirmar no ARAM:** o Felipe disse que aparece uma grade de campeões no ARAM. Falta saber se é uma escolha no começo (aí o ARAM também precisa do aviso "sua vez") ou o banco de trocas. A gravação de uma ARAM pela fila responde.
+
 **Pendente com o Felipe:** gravar uma **fila de verdade** (normal ou ranqueada), de preferência numa partida que ele já ia jogar. Ela confirma os dados de ready check, que a personalizada não tem.
 
-### 8. Ações
+### 8. Ações ✅
 Aceitar/recusar, marcar/confirmar campeão, reroll e troca do banco no ARAM. Fora de `ReadyCheck`/`ChampSelect` levanta `ForaDeFase` (409).
+- `servicos/acoes.py`. Há um teste para cada fase sem ação, conferindo que nada chega à LCU.
+- No planejamento, "marcar" declara a intenção (PATCH no meu pick); "confirmar" é recusado.
+- O campeão é validado contra `pickable`/`bannable-champion-ids` antes de ir ao cliente.
+- Confirmar usa `PATCH .../actions/{id}` com `{"championId", "completed": true}`.
+
+**A validar ao vivo (com o Felipe na fila):** aceitar, intenção no planejamento, marcar e confirmar ban/pick, reroll e banco no ARAM.
 
 ### 9. Autenticação
 PIN + bloqueio por IP, sessões com cookie (só o SHA-256 salvo) e tokens de uso único para os botões da notificação.

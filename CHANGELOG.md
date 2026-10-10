@@ -18,6 +18,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Opção `--ausente` para iniciar com o modo ausente ligado.
 - Avisos de planejamento (declare a intenção), campeão do ARAM e saída da fila sem aceite.
 - Gravações reais anonimizadas como fixtures, reproduzidas pelo monitor nos testes.
+- Ações no cliente: aceitar/recusar a partida, declarar intenção, marcar e confirmar ban/pick, reroll e troca do banco no ARAM, sempre conferindo a fase.
 
 ### Corrigido
 - "Sua vez de banir" saía no início do planejamento, e não quando os bans começavam.
