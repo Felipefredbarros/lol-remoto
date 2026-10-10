@@ -98,8 +98,19 @@ class Selecao:
         return tuple(a for a in self.acoes if a.em_andamento and not a.concluida)
 
     @property
+    def em_planejamento(self) -> bool:
+        """Etapa de declarar a intenção de pick (escolha alternada), antes dos bans."""
+        return self.timer.etapa is Etapa.PLANEJAMENTO
+
+    @property
     def minha_vez(self) -> Acao | None:
-        """A minha ação em andamento, se for a minha vez de banir ou escolher."""
+        """A minha ação em andamento, se for a minha vez de banir ou escolher.
+
+        No planejamento o cliente já marca o primeiro ban como "em andamento", mas ainda
+        não dá para banir (gravação real, out/2026); por isso ali não é a minha vez.
+        """
+        if self.em_planejamento:
+            return None
         return next((a for a in self.em_andamento if a.celula == self.minha_celula), None)
 
     def bans(self, aliados: bool) -> tuple[int, ...]:

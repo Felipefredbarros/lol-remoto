@@ -43,13 +43,19 @@ A fase vem de `/lol-gameflow/v1/gameflow-phase`:
 | Fase | O app... |
 |---|---|
 | `None`, `Lobby` | só mostra o estado |
-| `Matchmaking` | mostra "Na fila". Se veio de `ChampSelect`: **alguém deu dodge**, aviso. Se veio de `ReadyCheck`: alguém recusou, aviso. |
-| `ReadyCheck` | **aviso urgente** com Aceitar/Recusar; ações liberadas |
-| `ChampSelect` | tela da seleção ao vivo; **aviso quando for sua vez**; ações liberadas |
+| `Matchmaking` | mostra "Na fila". Se veio de `ChampSelect`: **alguém deu dodge**, aviso. Se veio de uma partida encontrada: alguém recusou, aviso. |
+| `ReadyCheck` | **aviso urgente** com Aceitar/Recusar, só se houver dados de ready check (a personalizada passa por esta fase em milissegundos, sem nada para aceitar); ações liberadas. Se voltar para `Lobby`: aviso "você saiu da fila" |
+| `ChampSelect` | tela da seleção ao vivo; ações liberadas. Avisos: **planejamento** (declare a intenção), **sua vez** de banir/escolher e, no ARAM, **o campeão sorteado** |
 | `GameStart` | **aviso "Partida carregando, volta pro PC!"**; desliga o modo ausente; **para de agir** |
 | `InProgress`, `Reconnect`, `WaitingForStats`, `PreEndOfGame`, `EndOfGame`… | só mostra o estado; nenhuma ação é aceita |
 
 As regras ficam em `dominio/fase.py` (pode agir?) e `dominio/avisos.py` (o que avisar em cada transição). As ações levantam `ForaDeFase` (HTTP 409) fora de `ReadyCheck`/`ChampSelect`.
+
+### O que as gravações reais mostraram
+- **Planejamento:** na escolha alternada, os primeiros ~24 s são de planejamento (`timer.phase = PLANNING`). O cliente já marca o primeiro ban como "em andamento", mas ainda não dá para banir. Por isso `Selecao.minha_vez` ignora o planejamento, e há um aviso próprio para ele.
+- **A sessão chega antes da fase:** o evento de `/lol-champ-select/v1/session` costuma chegar antes do `ChampSelect`, às vezes ainda em `Matchmaking`. O monitor busca a sessão por GET ao entrar na seleção.
+- **Personalizada:** às vezes vai de `Matchmaking` direto para `ChampSelect`; outras vezes passa por `ReadyCheck` em milissegundos, sem evento de ready check.
+- **ARAM:** começa com uns 15 s de "pick em andamento" sem campeão; depois vem a finalização, com o campeão e o banco.
 
 ## Modo ausente
 

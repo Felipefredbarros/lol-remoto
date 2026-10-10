@@ -11,46 +11,11 @@ import threading
 from collections.abc import Callable
 
 from lol_remoto.dominio.avisos import Aviso, TipoAviso, avisos
-from lol_remoto.plataforma.ntfy import (
-    PRIORIDADE_MAXIMA,
-    ErroNotificacao,
-    Notificacao,
-    Notificador,
-)
+from lol_remoto.plataforma.ntfy import ErroNotificacao, Notificacao, Notificador
+from lol_remoto.servicos import mensagens
 from lol_remoto.servicos.estado import Estado, Retrato
 
 log = logging.getLogger(__name__)
-
-_TEXTOS: dict[TipoAviso, tuple[str, str, int, str]] = {
-    # tipo: (título, mensagem, prioridade, tag/emoji do ntfy)
-    TipoAviso.PARTIDA_ENCONTRADA: (
-        "Partida encontrada!",
-        "Você tem uns 10 segundos para aceitar.",
-        PRIORIDADE_MAXIMA,
-        "rotating_light",
-    ),
-    TipoAviso.PARTIDA_RECUSADA: (
-        "Partida recusada",
-        "Alguém recusou. Você voltou para a fila.",
-        4,
-        "hourglass_flowing_sand",
-    ),
-    TipoAviso.SUA_VEZ_BANIR: ("Sua vez de banir!", "", PRIORIDADE_MAXIMA, "no_entry"),
-    TipoAviso.SUA_VEZ_ESCOLHER: ("Sua vez de escolher!", "", PRIORIDADE_MAXIMA, "crossed_swords"),
-    TipoAviso.DODGE: ("Alguém deu dodge", "Você voltou para a fila.", 4, "warning"),
-    TipoAviso.SELECAO_CANCELADA: (
-        "Seleção cancelada",
-        "A seleção de campeões acabou sem partida.",
-        4,
-        "x",
-    ),
-    TipoAviso.CARREGANDO: (
-        "Partida carregando",
-        "Volta pro PC! O modo ausente foi desligado.",
-        PRIORIDADE_MAXIMA,
-        "video_game",
-    ),
-}
 
 
 class ServicoNotificacoes:
@@ -92,23 +57,7 @@ class ServicoNotificacoes:
                 self._estado.definir_ausente(False)  # dentro da partida, nada de push
 
     def montar(self, aviso: Aviso, retrato: Retrato) -> Notificacao:
-        titulo, mensagem, prioridade, tag = _TEXTOS[aviso.tipo]
-        if aviso.tipo in (TipoAviso.SUA_VEZ_BANIR, TipoAviso.SUA_VEZ_ESCOLHER):
-            mensagem = self._mensagem_da_vez(aviso, retrato)
-        return Notificacao(
-            titulo, mensagem, prioridade=prioridade, tags=(tag,), link=self._endereco()
-        )
-
-    def _mensagem_da_vez(self, aviso: Aviso, retrato: Retrato) -> str:
-        partes = []
-        if aviso.segundos is not None:
-            partes.append(f"{aviso.segundos} s restantes.")
-        eu = retrato.selecao.eu if retrato.selecao else None
-        intencao = self._estado.catalogo.nome(eu.intencao) if eu and eu.intencao else None
-        if aviso.tipo is TipoAviso.SUA_VEZ_ESCOLHER and intencao:
-            partes.append(f"Sua intenção: {intencao}.")
-        partes.append("Toque para abrir.")
-        return " ".join(partes)
+        return mensagens.montar(aviso, retrato.selecao, self._estado.catalogo, self._endereco())
 
     def _enfileirar(self, notificacao: Notificacao) -> None:
         self._fila.put(notificacao)

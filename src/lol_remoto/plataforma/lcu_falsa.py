@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import queue
+import time
 from collections.abc import Iterable, Iterator
 from typing import Any
 
@@ -60,8 +61,20 @@ class LcuFalsa:
         while True:
             evento = self._fila.get()
             if evento is None:
+                self._fila.task_done()
                 raise ConexaoFechada("LCU falsa desconectada.")
             yield evento
+            self._fila.task_done()  # quem consome voltou: o evento anterior foi processado
+
+    def aguardar_consumo(self, tempo_limite: float = 3.0) -> None:
+        """Bloqueia até todos os eventos emitidos terem sido processados por quem os lê."""
+        fim = time.monotonic() + tempo_limite
+        with self._fila.all_tasks_done:
+            while self._fila.unfinished_tasks:
+                restante = fim - time.monotonic()
+                if restante <= 0:
+                    raise TimeoutError("Os eventos da LCU falsa não foram consumidos a tempo.")
+                self._fila.all_tasks_done.wait(restante)
 
     def fechar(self) -> None:
         self.desconectar()

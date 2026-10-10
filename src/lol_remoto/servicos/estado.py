@@ -34,7 +34,7 @@ class Retrato:
 
     @property
     def momento(self) -> Momento:
-        return Momento(self.fase, self.selecao)
+        return Momento(self.fase, self.selecao, self.ready_check)
 
 
 Ouvinte = Callable[[Retrato, Retrato], None]

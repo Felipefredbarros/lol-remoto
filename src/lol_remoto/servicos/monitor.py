@@ -136,6 +136,9 @@ class Monitor:
                 mudancas["selecao"] = self._ler_selecao(lcu.get(SESSAO_SELECAO))
             if fase is not Fase.PARTIDA_ENCONTRADA:
                 mudancas["ready_check"] = None
+            elif self._estado.atual.ready_check is None:
+                # Na fila de verdade há dados de ready check; na personalizada, não (404).
+                mudancas["ready_check"] = ready_check_de(lcu.get(READY_CHECK))
         elif evento.uri == SESSAO_SELECAO:
             if self._estado.atual.fase not in _FASES_COM_SELECAO:
                 return  # sobra de uma seleção que já acabou

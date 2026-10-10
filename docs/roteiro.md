@@ -13,7 +13,7 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 4 | Cliente WebSocket (stdlib) | ✅ | `e43ff80` |
 | 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | ✅ | `e9f8282` |
 | 6 | Notificador ntfy + config | ✅ | `3f307b8` |
-| 7 | Monitor, estado, notificações e modo ausente | ✅ | (próximo commit `feat`) |
+| 7 | Monitor, estado, notificações e modo ausente | ✅ | `531a64b`, ajustes no próximo commit `fix` |
 | 8 | Ações: ready check, pick/ban, ARAM | ⏳ | |
 | 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ⏳ | |
 | 10 | API HTTP + SSE | ⏳ | |
@@ -72,6 +72,16 @@ Loop do lockfile → conexão → eventos → `Estado`. Gera avisos nas transiç
 cd src; py -m lol_remoto --ausente
 ```
 Entre na fila e confira se chegam: partida encontrada, sua vez de banir/escolher e "partida carregando". Os botões Aceitar/Recusar só chegam na etapa 9/10; por enquanto, aceite no PC.
+
+### 7b. Ajustes com gravações reais ✅
+O teste do Felipe numa personalizada e duas gravações (`tests/fixtures/gravacoes/`) mostraram:
+- **Bug:** no planejamento o primeiro ban já vem "em andamento". O app avisava "Sua vez de banir" na entrada da seleção e não avisava de novo quando os bans começavam de verdade. Corrigido: o planejamento tem aviso próprio ("Seleção começou: declare sua intenção").
+- **Aviso falso:** a personalizada passa por `ReadyCheck` em milissegundos. Agora "Partida encontrada!" exige dados de ready check (o monitor faz GET ao entrar na fase).
+- **ARAM:** novo aviso com o campeão sorteado e o tamanho do banco, sem "sua vez".
+- **Saída da fila:** novo aviso quando a partida encontrada some sem aceite ("Você saiu da fila").
+- `tests/test_gravacoes_reais.py` reproduz as gravações pelo monitor e confere as notificações.
+
+**Pendente com o Felipe:** gravar uma **fila de verdade** (normal ou ranqueada), de preferência numa partida que ele já ia jogar. Ela confirma os dados de ready check, que a personalizada não tem.
 
 ### 8. Ações
 Aceitar/recusar, marcar/confirmar campeão, reroll e troca do banco no ARAM. Fora de `ReadyCheck`/`ChampSelect` levanta `ForaDeFase` (409).

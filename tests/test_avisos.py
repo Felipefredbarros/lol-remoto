@@ -1,9 +1,11 @@
 import copy
+from dataclasses import replace
 
 import pytest
 
 from lol_remoto.dominio.avisos import Aviso, Momento, TipoAviso, avisos
 from lol_remoto.dominio.fase import Fase
+from lol_remoto.dominio.ready_check import ReadyCheck, Resposta
 from lol_remoto.dominio.selecao import selecao_de
 
 
@@ -14,15 +16,14 @@ def _tipos(anterior, atual):
 @pytest.mark.parametrize(
     ("de", "para", "esperado"),
     [
-        (Fase.FILA, Fase.PARTIDA_ENCONTRADA, [TipoAviso.PARTIDA_ENCONTRADA]),
-        (Fase.NENHUMA, Fase.PARTIDA_ENCONTRADA, [TipoAviso.PARTIDA_ENCONTRADA]),
-        (Fase.PARTIDA_ENCONTRADA, Fase.FILA, [TipoAviso.PARTIDA_RECUSADA]),
         (Fase.SELECAO, Fase.FILA, [TipoAviso.DODGE]),
         (Fase.SELECAO, Fase.LOBBY, [TipoAviso.SELECAO_CANCELADA]),
         (Fase.SELECAO, Fase.NENHUMA, [TipoAviso.SELECAO_CANCELADA]),
         (Fase.SELECAO, Fase.CARREGANDO, [TipoAviso.CARREGANDO]),
         (Fase.SELECAO, Fase.EM_PARTIDA, [TipoAviso.CARREGANDO]),
-        # Sem aviso:
+        # Sem aviso (a partida encontrada depende dos dados de ready check; ver abaixo):
+        (Fase.FILA, Fase.PARTIDA_ENCONTRADA, []),
+        (Fase.PARTIDA_ENCONTRADA, Fase.FILA, []),
         (Fase.LOBBY, Fase.FILA, []),
         (Fase.FILA, Fase.LOBBY, []),
         (Fase.PARTIDA_ENCONTRADA, Fase.SELECAO, []),
@@ -37,9 +38,47 @@ def test_avisos_de_mudanca_de_fase(de, para, esperado):
     assert _tipos(Momento(de), Momento(para)) == esperado
 
 
-def test_partida_encontrada_avisa_uma_vez_so():
-    momento = Momento(Fase.PARTIDA_ENCONTRADA)
-    assert avisos(momento, momento) == []
+READY = ReadyCheck(em_andamento=True, resposta=Resposta.NENHUMA, segundos_decorridos=1.0)
+
+
+def test_partida_encontrada_com_dados_de_ready_check():
+    fila = Momento(Fase.FILA)
+    so_fase = Momento(Fase.PARTIDA_ENCONTRADA)
+    com_dados = Momento(Fase.PARTIDA_ENCONTRADA, ready_check=READY)
+    assert _tipos(fila, com_dados) == [TipoAviso.PARTIDA_ENCONTRADA]
+    # Os dados podem chegar depois do evento de fase.
+    assert _tipos(fila, so_fase) == []
+    assert _tipos(so_fase, com_dados) == [TipoAviso.PARTIDA_ENCONTRADA]
+    # Uma vez só, mesmo com o timer do ready check andando.
+    depois = Momento(Fase.PARTIDA_ENCONTRADA, ready_check=replace(READY, segundos_decorridos=4))
+    assert avisos(com_dados, depois) == []
+
+
+def test_partida_personalizada_nao_e_partida_encontrada():
+    # Gravação real: Matchmaking → ReadyCheck → ChampSelect em ms, sem dados de ready check.
+    assert _tipos(Momento(Fase.FILA), Momento(Fase.PARTIDA_ENCONTRADA)) == []
+    assert _tipos(Momento(Fase.PARTIDA_ENCONTRADA), Momento(Fase.SELECAO)) == []
+
+
+@pytest.mark.parametrize(
+    ("resposta", "para", "esperado"),
+    [
+        (Resposta.NENHUMA, Fase.FILA, TipoAviso.PARTIDA_RECUSADA),
+        (Resposta.ACEITA, Fase.FILA, TipoAviso.PARTIDA_RECUSADA),
+        (Resposta.NENHUMA, Fase.LOBBY, TipoAviso.NAO_ACEITOU),
+        (Resposta.NENHUMA, Fase.NENHUMA, TipoAviso.NAO_ACEITOU),
+        (Resposta.RECUSADA, Fase.LOBBY, TipoAviso.SAIU_DA_FILA),
+        (Resposta.ACEITA, Fase.LOBBY, TipoAviso.SAIU_DA_FILA),
+    ],
+)
+def test_fim_da_partida_encontrada(resposta, para, esperado):
+    anterior = Momento(Fase.PARTIDA_ENCONTRADA, ready_check=replace(READY, resposta=resposta))
+    assert _tipos(anterior, Momento(para)) == [esperado]
+
+
+def test_partida_encontrada_que_vira_selecao_nao_avisa_saida():
+    anterior = Momento(Fase.PARTIDA_ENCONTRADA, ready_check=READY)
+    assert _tipos(anterior, Momento(Fase.SELECAO)) == []
 
 
 def test_sua_vez_de_escolher_ao_entrar_na_selecao(sessao_draft):
@@ -77,9 +116,37 @@ def test_timer_infinito_nao_informa_segundos(sessao_draft):
     assert resultado[0].segundos is None
 
 
-def test_aram_nao_tem_aviso_de_vez(sessao_aram):
+def test_aram_avisa_o_campeao_e_nao_a_vez(sessao_aram):
     selecao = selecao_de(sessao_aram)
-    assert avisos(Momento(Fase.PARTIDA_ENCONTRADA), Momento(Fase.SELECAO, selecao)) == []
+    resultado = avisos(Momento(Fase.PARTIDA_ENCONTRADA), Momento(Fase.SELECAO, selecao))
+    assert resultado == [Aviso(TipoAviso.ARAM, segundos=61, campeao=36)]
+
+
+def test_aram_avisa_quando_o_campeao_chega_e_nao_no_reroll(sessao_aram):
+    sem_campeao = copy.deepcopy(sessao_aram)
+    sem_campeao["myTeam"][2]["championId"] = 0
+    sem_campeao["actions"] = [[{"id": 0, "actorCellId": 7, "type": "pick", "isInProgress": True}]]
+    antes = Momento(Fase.SELECAO, selecao_de(sem_campeao))
+    assert avisos(Momento(Fase.FILA), antes) == []  # nada de "sua vez" no ARAM
+    depois = Momento(Fase.SELECAO, selecao_de(sessao_aram))
+    assert _tipos(antes, depois) == [TipoAviso.ARAM]
+    sessao_aram["myTeam"][2]["championId"] = 22  # reroll
+    assert avisos(depois, Momento(Fase.SELECAO, selecao_de(sessao_aram))) == []
+
+
+def test_planejamento_avisa_intencao_e_nao_o_ban(sessao_draft):
+    # Gravação real: no planejamento o primeiro ban já vem "em andamento".
+    for turno in sessao_draft["actions"]:
+        for acao in turno:
+            acao.update(completed=False, isInProgress=False, championId=0)
+    sessao_draft["actions"][0][2]["isInProgress"] = True  # meu ban
+    sessao_draft["timer"].update(phase="PLANNING", adjustedTimeLeftInPhase=24000)
+    planejamento = Momento(Fase.SELECAO, selecao_de(sessao_draft))
+    assert avisos(Momento(Fase.FILA), planejamento) == [Aviso(TipoAviso.PLANEJAMENTO, segundos=24)]
+
+    sessao_draft["timer"].update(phase="BAN_PICK", adjustedTimeLeftInPhase=30000)
+    bans = Momento(Fase.SELECAO, selecao_de(sessao_draft))
+    assert avisos(planejamento, bans) == [Aviso(TipoAviso.SUA_VEZ_BANIR, acao_id=3, segundos=30)]
 
 
 def test_selecao_sem_dados_nao_quebra():

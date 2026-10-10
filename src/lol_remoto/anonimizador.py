@@ -20,9 +20,11 @@ _TEXTOS = {
     "summonername": "Jogador",
     "displayname": "Jogador",
     "internalname": "jogador",
+    "playeralias": "Jogador",
     "tagline": "TESTE",
     "puuid": "puuid-",
     "obfuscatedpuuid": "opuuid-",
+    "sessao": "sessao-",
 }
 _NUMEROS = ("summonerid", "accountid", "obfuscatedsummonerid", "playerid", "gameid")
 
@@ -62,6 +64,8 @@ class Anonimizador:
                 resultado[chave] = "<removido>"
             elif minuscula in _TEXTOS or minuscula in _NUMEROS:
                 resultado[chave] = self._pseudonimo(minuscula, valor)
+            elif minuscula == "id" and isinstance(valor, str):
+                resultado[chave] = self._pseudonimo("sessao", valor)  # UUID da seleção
             else:
                 resultado[chave] = self(valor)
         return resultado

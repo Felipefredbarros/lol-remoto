@@ -16,3 +16,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Monitor do cliente do LoL: espera o cliente abrir, acompanha fila, partida encontrada e seleção de campeões, e reconecta quando o cliente reinicia.
 - Notificações de partida encontrada, recusa, sua vez de banir/escolher, dodge, seleção cancelada e partida carregando, só com o modo ausente ligado. Ele desliga sozinho quando a partida carrega.
 - Opção `--ausente` para iniciar com o modo ausente ligado.
+- Avisos de planejamento (declare a intenção), campeão do ARAM e saída da fila sem aceite.
+- Gravações reais anonimizadas como fixtures, reproduzidas pelo monitor nos testes.
+
+### Corrigido
+- "Sua vez de banir" saía no início do planejamento, e não quando os bans começavam.
+- "Partida encontrada!" saía em partidas personalizadas, que não têm nada para aceitar.

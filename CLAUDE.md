@@ -23,6 +23,7 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 | serviços | `servicos/monitor.py` | Espera o lockfile, conecta na LCU, assina eventos, reconecta |
 | serviços | `servicos/estado.py` | Estado atual (fase, seleção, ready check, modo ausente) + assinantes |
 | serviços | `servicos/notificacoes.py` | Transforma avisos em notificações (só com o modo ausente ligado) |
+| serviços | `servicos/mensagens.py` | Título, texto, prioridade e emoji de cada aviso |
 | serviços | `servicos/acoes.py` | Aceitar/recusar, marcar/confirmar campeão, reroll/troca no ARAM |
 | serviços | `servicos/autenticacao.py` | PIN × hash + bloqueio por IP |
 | serviços | `servicos/sessoes.py` | Tokens de sessão do cookie (só o SHA-256 fica salvo) |
@@ -65,7 +66,7 @@ cd src; py -m lol_remoto --anonimizar ..\gravacoes\x.jsonl ..\tests\fixtures\gra
 2. **Testes nunca falam com a LCU real nem com o ntfy.sh.** Use `LcuFalsa` e `NotificadorFalso`. Contra o cliente real, durante o desenvolvimento, só GETs, a menos que o Felipe esteja jogando e peça.
 3. **Runtime só com biblioteca padrão.** Dependências novas só em `[project.optional-dependencies].dev`.
 4. **Segredos fora do repo e do log.** Config e sessões ficam em `%APPDATA%\LolRemoto`. Nunca grave nem registre em log: PIN, senha do lockfile, token de sessão, token de uso único, tópico do ntfy.
-5. **Fixtures anonimizadas.** Gravações da LCU só entram em `tests/fixtures/` depois de passar pelo anonimizador (sem `puuid`, `summonerId`, nomes, tags).
+5. **Fixtures anonimizadas.** Gravações da LCU só entram em `tests/fixtures/` depois de passar pelo anonimizador (sem `puuid`, `summonerId`, nomes, tags). Gravações reais valem mais que JSON montado à mão: o formato real já surpreendeu (ver `docs/roteiro.md`, etapa 7).
 6. **Não afrouxe as proteções da API** (`api/protecao.py`, JSON no POST, `SameSite=Strict`, timeout, verificação TLS da LCU) sem um ADR explicando o motivo.
 7. **Toda mudança de comportamento vem com teste** em `tests/`. Antes de commitar: `ruff check .`, `ruff format --check .` e `pytest` passando. Nos testes, gere hashes com `gerar_hash(pin, iteracoes=1_000)`.
 8. **Decisão de arquitetura nova → ADR novo** em `docs/decisoes/NNNN-titulo.md`. Atualize o `CHANGELOG.md`. Ao concluir uma etapa, atualize o [docs/roteiro.md](docs/roteiro.md).
@@ -82,4 +83,5 @@ cd src; py -m lol_remoto --anonimizar ..\gravacoes\x.jsonl ..\tests\fixtures\gra
 
 ## Como adicionar um novo aviso (notificação)
 1. `dominio/avisos.py`: regra pura `(estado_anterior, estado_novo) -> Aviso | None`, com teste.
-2. `servicos/notificacoes.py`: título, prioridade e botões do ntfy para o novo tipo.
+2. `servicos/mensagens.py`: título, texto, prioridade e emoji do novo tipo.
+3. Se puder, confira com uma gravação real (`tests/test_gravacoes_reais.py`).
