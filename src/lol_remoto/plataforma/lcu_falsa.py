@@ -53,7 +53,10 @@ class LcuFalsa:
         self._fila.put(None)
 
     def eventos(self, caminhos: Iterable[str]) -> Iterator[Evento]:
-        self.assinados = list(caminhos)
+        self.assinados = list(caminhos)  # como a LcuHttp: assina na hora da chamada
+        return self._ler_eventos()
+
+    def _ler_eventos(self) -> Iterator[Evento]:
         while True:
             evento = self._fila.get()
             if evento is None:

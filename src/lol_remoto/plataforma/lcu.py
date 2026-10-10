@@ -164,17 +164,24 @@ class LcuHttp:
         return conteudo
 
     def eventos(self, caminhos: Iterable[str]) -> Iterator[Evento]:
-        self._ws = ClienteWebSocket.conectar(
+        # Conecta e assina já (não no primeiro next()): quem chama pode ler o estado
+        # inicial depois de assinar, sem perder eventos nesse meio-tempo.
+        ws = ClienteWebSocket.conectar(
             self.HOST,
             self._credenciais.porta,
             cabecalhos={"Authorization": self._autorizacao},
             contexto_ssl=self._contexto,
             tempo_limite=self._tempo_limite,
         )
+        self._ws = ws
         for caminho in caminhos:
-            self._ws.enviar_texto(json.dumps([5, nome_do_evento(caminho)]))
+            ws.enviar_texto(json.dumps([5, nome_do_evento(caminho)]))
+        return self._ler_eventos(ws)
+
+    @staticmethod
+    def _ler_eventos(ws: ClienteWebSocket) -> Iterator[Evento]:
         while True:
-            evento = evento_de(self._ws.receber())
+            evento = evento_de(ws.receber())
             if evento is not None:
                 yield evento
 

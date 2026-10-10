@@ -1,6 +1,7 @@
 import json
 
 from lol_remoto import __main__ as principal
+from lol_remoto import comandos
 from lol_remoto.plataforma.ntfy import ErroNotificacao
 
 
@@ -18,7 +19,7 @@ class _NotificadorCapturado:
 
 
 def test_testar_notificacao_cria_config_e_envia(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr(principal, "NotificadorNtfy", _NotificadorCapturado)
+    monkeypatch.setattr(comandos, "NotificadorNtfy", _NotificadorCapturado)
     _NotificadorCapturado.enviadas = []
     caminho = tmp_path / "config.json"
 
@@ -31,7 +32,7 @@ def test_testar_notificacao_cria_config_e_envia(tmp_path, monkeypatch, capsys):
 
 
 def test_testar_notificacao_com_falha(tmp_path, monkeypatch):
-    monkeypatch.setattr(principal, "NotificadorNtfy", _NotificadorCapturado)
+    monkeypatch.setattr(comandos, "NotificadorNtfy", _NotificadorCapturado)
     monkeypatch.setattr(_NotificadorCapturado, "falhar", True)
     assert principal.main(["--config", str(tmp_path / "c.json"), "--testar-notificacao"]) == 1
 

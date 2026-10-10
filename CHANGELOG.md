@@ -13,3 +13,6 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Comandos `--gravar` (grava eventos reais da LCU, só escutando) e `--anonimizar` (prepara gravações para virar fixtures).
 - Notificações pelo ntfy, com prioridade, link e botões de ação; comando `--testar-notificacao`.
 - Configuração em `%APPDATA%\LolRemoto\config.json`, criada com PIN e tópico do ntfy aleatórios.
+- Monitor do cliente do LoL: espera o cliente abrir, acompanha fila, partida encontrada e seleção de campeões, e reconecta quando o cliente reinicia.
+- Notificações de partida encontrada, recusa, sua vez de banir/escolher, dodge, seleção cancelada e partida carregando, só com o modo ausente ligado. Ele desliga sozinho quando a partida carrega.
+- Opção `--ausente` para iniciar com o modo ausente ligado.

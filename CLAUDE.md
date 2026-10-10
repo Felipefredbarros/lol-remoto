@@ -12,6 +12,7 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 |---|---|---|
 | entrada | `__main__.py` | Argumentos, log, monta dependências, sobe servidores e o monitor |
 | entrada | `trocar_pin.py` | Comando `--trocar-pin` (console, `getpass`) |
+| entrada | `comandos.py` | Comandos avulsos: `--gravar`, `--anonimizar`, `--testar-notificacao` |
 | entrada | `gravacao.py` | Comando `--gravar`: grava eventos reais da LCU em JSONL (só escuta) |
 | entrada | `anonimizador.py` | Comando `--anonimizar`: tira nomes, ids e segredos de uma gravação |
 | config | `config.py` | Lê/cria `%APPDATA%\LolRemoto\config.json` (`pin_hash`, porta, ntfy, pasta do LoL) |
@@ -29,6 +30,7 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 | domínio | `dominio/fase.py` | Fases do gameflow, transições e “pode agir?” |
 | domínio | `dominio/selecao.py` | JSON da sessão de seleção → `Selecao` (times, bans, ação atual, timer) |
 | domínio | `dominio/avisos.py` | Regras de quando avisar (ready check, sua vez, dodge, carregando) |
+| domínio | `dominio/ready_check.py` | Partida encontrada: estado e a sua resposta |
 | domínio | `dominio/campeoes.py` | Catálogo de campeões (id → nome) e filtros |
 | domínio | `dominio/pin.py` | Formato do PIN, geração e hash PBKDF2-SHA256 |
 | plataforma | `plataforma/lockfile.py` | Lê o lockfile do cliente (porta e senha, que mudam a cada abertura) |
@@ -53,6 +55,7 @@ cd src; py -m lol_remoto --simular        # cliente LoL falso com roteiro (http:
 cd src; py -m lol_remoto --simular --config $env:TEMP\teste.json   # sem mexer no config real
 cd src; py -m lol_remoto --trocar-pin     # define um novo PIN
 cd src; py -m lol_remoto --testar-notificacao   # manda uma notificação de teste ao celular
+cd src; py -m lol_remoto --ausente   # app de verdade, já com o modo ausente ligado
 cd src; py -m lol_remoto --gravar ..\gravacoes  # grava eventos reais da LCU (para fixtures)
 cd src; py -m lol_remoto --anonimizar ..\gravacoes\x.jsonl ..\tests\fixtures\gravacoes\x.jsonl
 ```

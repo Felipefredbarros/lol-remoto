@@ -12,8 +12,8 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 3 | Domínio: fases, seleção, avisos, campeões, PIN | ✅ | `545c155` |
 | 4 | Cliente WebSocket (stdlib) | ✅ | `e43ff80` |
 | 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | ✅ | `e9f8282` |
-| 6 | Notificador ntfy + config | ✅ | (próximo commit `feat`) |
-| 7 | Monitor, estado, notificações e modo ausente | 🔄 | |
+| 6 | Notificador ntfy + config | ✅ | `3f307b8` |
+| 7 | Monitor, estado, notificações e modo ausente | ✅ | (próximo commit `feat`) |
 | 8 | Ações: ready check, pick/ban, ARAM | ⏳ | |
 | 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ⏳ | |
 | 10 | API HTTP + SSE | ⏳ | |
@@ -59,8 +59,19 @@ Publicação em JSON no ntfy.sh com prioridade, link para a página e botões `h
 
 **Pendente com o Felipe:** instalar o app ntfy no Android, rodar `cd src; py -m lol_remoto --testar-notificacao`, assinar o tópico mostrado e conferir se a notificação chega.
 
-### 7. Monitor e estado
+### 7. Monitor e estado ✅
 Loop do lockfile → conexão → eventos → `Estado`. Gera avisos nas transições e notifica só com o modo ausente ligado. O modo desliga em `GameStart`.
+- `servicos/estado.py`, `monitor.py` e `notificacoes.py`, mais `dominio/ready_check.py`. O envio das notificações roda numa thread própria.
+- Só avisa transições vistas com o cliente conectado: conectar no meio de uma seleção ou o cliente fechar não viram "dodge" nem "seleção cancelada".
+- Ao ligar o modo ausente sai uma notificação de confirmação (prioridade baixa).
+- `--ausente`: inicia com o modo ligado, para testar antes de a página existir.
+- Conferido no cliente real: conecta, lê a fase, carrega 250 campeões e encerra limpo.
+
+**Teste ao vivo (Felipe), depois do `--testar-notificacao` da etapa 6:**
+```powershell
+cd src; py -m lol_remoto --ausente
+```
+Entre na fila e confira se chegam: partida encontrada, sua vez de banir/escolher e "partida carregando". Os botões Aceitar/Recusar só chegam na etapa 9/10; por enquanto, aceite no PC.
 
 ### 8. Ações
 Aceitar/recusar, marcar/confirmar campeão, reroll e troca do banco no ARAM. Fora de `ReadyCheck`/`ChampSelect` levanta `ForaDeFase` (409).
