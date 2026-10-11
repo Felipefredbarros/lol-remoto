@@ -30,3 +30,4 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - "Partida encontrada!" saía em partidas personalizadas, que não têm nada para aceitar.
 - Eventos do cliente que não chegavam quando o app conectava logo depois de o cliente abrir: agora o app assina o canal geral de eventos e filtra os que usa.
 - O aviso "você saiu da fila" se perdia se o cliente apagasse o ready check antes de mudar de fase.
+- Grade de campeões vazia na hora do ban numa ranqueada: sem a lista de baníveis do cliente, o app oferece todos os campeões, menos os já banidos. A página avisa quando não há campeão para mostrar.

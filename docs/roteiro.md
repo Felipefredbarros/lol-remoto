@@ -14,12 +14,12 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | ✅ | `e9f8282` |
 | 6 | Notificador ntfy + config | ✅ | `3f307b8` |
 | 7 | Monitor, estado, notificações e modo ausente | ✅ | `531a64b`, ajustes `0e327f4` e `6b28178` |
-| 8 | Ações: ready check, pick/ban, ARAM | ✅ (falta validar ao vivo) | `f409d53` |
+| 8 | Ações: ready check, pick/ban, ARAM | ✅ (ban e ARAM a validar ao vivo) | `f409d53` |
 | 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ✅ | `ee43194` |
 | 10 | API HTTP + SSE | ✅ | `90a4279`, ajuste `a58ecd5` |
-| 10b | Runas recomendadas e feitiços | ✅ (feitiços a validar ao vivo) | `ffe9548` |
-| 11 | Interface web do celular | ✅ (falta o Felipe ver no celular) | `0b1ee5b` |
-| 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ✅ | (próximo commit `feat`) |
+| 10b | Runas recomendadas e feitiços | ✅ (runas validadas; feitiços a conferir) | `ffe9548` |
+| 11 | Interface web do celular | ✅ (usada numa ranqueada) | `0b1ee5b` |
+| 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ✅ | `aa7fcd8` |
 | 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ⏳ | |
 | 14 | CI, README, CHANGELOG e versão 0.1.0 | ⏳ | |
 
@@ -102,6 +102,11 @@ Aceitar/recusar, marcar/confirmar campeão, reroll e troca do banco no ARAM. For
 - Confirmar usa `PATCH .../actions/{id}` com `{"championId", "completed": true}`.
 
 **A validar ao vivo (com o Felipe na fila):** aceitar, intenção no planejamento, marcar e confirmar ban/pick, reroll e banco no ARAM.
+
+**Ranqueada solo/duo pelo celular (11/10/2026), gravada em `tests/fixtures/gravacoes/ranqueada_solo.jsonl`:**
+- Funcionou: aceitar pela notificação, intenção no planejamento, confirmar o pick, runas e todos os avisos (iguais aos do teste da gravação).
+- **Bug:** na hora do ban a grade de campeões ficou vazia e o ban passou em branco. A suspeita é que o cliente devolveu `bannable-champion-ids` vazio (ou 404). Agora, sem essa lista, o app oferece o catálogo menos os já banidos (na ranqueada dá para banir qualquer campeão) e registra um aviso no log. A página diz "Nenhum campeão disponível agora" em vez de uma grade vazia, e uma resposta atrasada da lista não sobrescreve mais a da ação atual.
+- **Falta confirmar** numa próxima ranqueada: o ban pelo celular e, no log, se aparece "O cliente não informou os campeões baníveis" (isso confirma a causa).
 
 ### 9. Autenticação ✅
 PIN + bloqueio por IP, sessões com cookie (só o SHA-256 salvo) e tokens de uso único para os botões da notificação.

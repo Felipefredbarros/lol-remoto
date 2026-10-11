@@ -104,6 +104,19 @@ def test_normal_alternada_pela_fila(tmp_path):
     assert enviadas[1].mensagem.startswith("Declare sua intenção de pick. 12 s")
 
 
+def test_ranqueada_solo(tmp_path):
+    # Mesmas notificações que chegaram no celular nessa partida (log de 11/10/2026).
+    fase_final, enviadas = reproduzir("ranqueada_solo.jsonl", tmp_path)
+    assert fase_final is Fase.CARREGANDO
+    assert [n.titulo for n in enviadas] == [
+        "Partida encontrada!",
+        "Seleção começou",
+        "Sua vez de banir!",
+        "Sua vez de escolher!",
+        "Partida carregando",
+    ]
+
+
 def test_dodge_na_finalizacao(tmp_path):
     # Gravação feita logo após o cliente abrir: sem eventos de ready check (ver lcu.py).
     fase_final, enviadas = reproduzir("normal_alternada_dodge.jsonl", tmp_path)

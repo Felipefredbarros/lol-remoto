@@ -9,6 +9,7 @@ let chaveAtual = null; // muda a cada nova ação (ban, pick, planejamento)
 let tipoAtual = "pick";
 let podeConfirmar = false;
 let selecionado = null;
+let carregando = false;
 
 export function iniciar(funcaoAgir) {
   agir = funcaoAgir;
@@ -29,12 +30,17 @@ export async function preparar(tipo, chave, marcado, confirmavel) {
     selecionado = null;
     el("busca").value = "";
     lista = [];
+    carregando = true;
     desenharGrade();
+    let recebida = [];
     try {
-      lista = (await chamar("/api/campeoes?tipo=" + tipo)).campeoes;
+      recebida = (await chamar("/api/campeoes?tipo=" + tipo)).campeoes;
     } catch (erro) {
       mensagem(erro.message, "erro");
     }
+    if (chave !== chaveAtual) return; // a ação mudou enquanto a lista chegava
+    lista = recebida;
+    carregando = false;
   }
   if (marcado && (!selecionado || selecionado.id !== marcado)) {
     selecionado = lista.find((c) => c.id === marcado) || selecionado;
@@ -59,6 +65,9 @@ function desenharGrade() {
     botao.addEventListener("click", () => marcar(campeao));
     return botao;
   }));
+  const vazia = el("grade-vazia");
+  vazia.hidden = carregando || visiveis.length > 0;
+  vazia.textContent = lista.length ? "Nenhum campeão com esse nome." : "Nenhum campeão disponível agora.";
   const confirmar = el("confirmar");
   confirmar.hidden = !podeConfirmar;
   confirmar.disabled = !selecionado;

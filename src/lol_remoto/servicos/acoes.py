@@ -92,10 +92,23 @@ class ServicoAcoes:
         return selecao.minha_vez
 
     def disponiveis(self, tipo: TipoAcao) -> list[int]:
-        """Ids que o cliente aceita agora para ban ou pick."""
-        exigir_fase(self._estado.atual.fase, Fase.SELECAO)
+        """Ids que o cliente aceita agora para ban ou pick.
+
+        Numa ranqueada a lista de baníveis veio vazia (roteiro, etapa 8). Como dá para banir
+        qualquer campeão, sem ela vale o catálogo menos os já banidos; o cliente recusa o
+        que não puder.
+        """
+        atual = self._estado.atual
+        exigir_fase(atual.fase, Fase.SELECAO)
         ids = self._lcu().get(BANIVEIS if tipo is TipoAcao.BAN else PICKAVEIS)
-        return [i for i in ids or [] if isinstance(i, int) and not isinstance(i, bool)]
+        validos = [i for i in ids or [] if isinstance(i, int) and not isinstance(i, bool)]
+        if validos or tipo is TipoAcao.PICK:
+            return validos
+        log.warning("O cliente não informou os campeões baníveis; usando o catálogo")
+        banidos = (
+            set(atual.selecao.bans(True) + atual.selecao.bans(False)) if atual.selecao else set()
+        )
+        return [c.id for c in self._estado.catalogo.buscar() if c.id not in banidos]
 
     def _validar_campeao(self, campeao: object, tipo: TipoAcao) -> int:
         if isinstance(campeao, bool) or not isinstance(campeao, int) or campeao <= 0:

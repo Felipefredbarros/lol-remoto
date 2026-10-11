@@ -1,5 +1,6 @@
 import pytest
 
+from lol_remoto.dominio.campeoes import Campeao, Catalogo
 from lol_remoto.dominio.fase import Fase, ForaDeFase
 from lol_remoto.dominio.selecao import TipoAcao, selecao_de
 from lol_remoto.plataforma.lcu import ErroLcu
@@ -166,6 +167,38 @@ def test_disponiveis_ignora_lixo(estado, acoes, lcu):
     estado.atualizar(fase=Fase.SELECAO)
     lcu.respostas[PICKAVEIS] = [1, "2", True, 3]
     assert acoes.disponiveis(TipoAcao.PICK) == [1, 3]
+
+
+@pytest.mark.parametrize("resposta", [[], None])
+def test_ban_sem_lista_do_cliente_usa_o_catalogo(resposta, estado, acoes, lcu, sessao_draft):
+    """Numa ranqueada real a grade do ban ficou vazia: o cliente não mandou os baníveis."""
+    for turno in sessao_draft["actions"]:
+        for acao in turno:
+            acao["isInProgress"] = False
+    sessao_draft["actions"][0][2].update(isInProgress=True, completed=False)  # meu ban (id 3)
+    _na_selecao(estado, sessao_draft)
+    estado.catalogo = Catalogo(
+        [Campeao(1, "Annie"), Campeao(103, "Ahri"), Campeao(157, "Yasuo"), Campeao(60103, "Ahri")]
+    )
+    lcu.respostas[BANIVEIS] = resposta
+
+    assert acoes.disponiveis(TipoAcao.BAN) == [103, 1]  # sem o Yasuo (banido) e a variante
+    with pytest.raises(CampeaoIndisponivel):
+        acoes.marcar(157)
+    acoes.confirmar(1)
+    assert lcu.chamadas[-1] == (
+        "PATCH",
+        "/lol-champ-select/v1/session/actions/3",
+        {"championId": 1, "completed": True},
+    )
+
+
+def test_pick_sem_lista_do_cliente_continua_vazio(estado, acoes, lcu):
+    """No pick o catálogo não serve: mostraria campeões que você não tem."""
+    estado.atualizar(fase=Fase.SELECAO)
+    estado.catalogo = Catalogo([Campeao(1, "Annie")])
+    lcu.respostas[PICKAVEIS] = []
+    assert acoes.disponiveis(TipoAcao.PICK) == []
 
 
 # ---------- ARAM ----------
