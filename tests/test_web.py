@@ -51,7 +51,9 @@ def test_html_respeita_a_csp():
     # default-src 'self': nada de script/estilo inline nem recursos de fora.
     assert "<style" not in HTML
     assert ' style="' not in HTML
-    assert re.findall(r"<script[^>]*>", HTML) == ['<script type="module" src="app.js">']
+    assert re.findall(r"<script[^>]*>", HTML, re.IGNORECASE) == [
+        '<script type="module" src="app.js">'
+    ]
     assert "http://" not in HTML and "https://" not in HTML
 
 

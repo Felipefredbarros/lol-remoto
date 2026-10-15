@@ -54,6 +54,7 @@ def test_contexto_tls_verifica_certificado_e_nome():
     assert contexto.verify_mode is ssl.CERT_REQUIRED
     assert contexto.check_hostname
     assert not contexto.verify_flags & ssl.VERIFY_X509_STRICT
+    assert contexto.minimum_version >= ssl.TLSVersion.TLSv1_2  # nada de TLS 1.0/1.1
     assert any("LoL Game Engineering" in str(c.get("subject")) for c in contexto.get_ca_certs())
 
 

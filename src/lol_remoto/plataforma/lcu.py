@@ -70,6 +70,8 @@ def contexto_tls() -> ssl.SSLContext:
     # O certificado da Riot não tem Authority Key Identifier; o Python 3.13+ recusa isso por
     # padrão. Cadeia, validade e nome (127.0.0.1) continuam verificados.
     contexto.verify_flags &= ~ssl.VERIFY_X509_STRICT
+    # Explícito, sem depender do padrão do Python/OpenSSL (apontado pelo CodeQL).
+    contexto.minimum_version = ssl.TLSVersion.TLSv1_2
     return contexto
 
 

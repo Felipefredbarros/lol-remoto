@@ -5,6 +5,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+### Segurança
+- A conexão com o cliente do LoL exige TLS 1.2 ou mais novo de forma explícita (antes dependia do padrão do Python; apontado pelo CodeQL).
+
 ### Corrigido
 - Logo depois do logon, se o IP do Tailscale já aparecia mas ainda não aceitava conexões, o app desistia de ouvir nele e o celular não alcançava o PC. Agora ele tenta de novo a cada 15 s.
 
