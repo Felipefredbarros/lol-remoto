@@ -11,6 +11,7 @@ import logging
 import random
 import re
 import threading
+from collections.abc import Callable
 from typing import Any
 
 from lol_remoto.plataforma import simulacao as sim
@@ -43,8 +44,15 @@ def _respostas_fixas() -> dict[str, Any]:
 
 
 class LcuSimulada(LcuFalsa):
-    def __init__(self, escala: float = 1.0, semente: int | None = None) -> None:
+    def __init__(
+        self,
+        escala: float = 1.0,
+        semente: int | None = None,
+        ativos: Callable[[str], bytes] | None = None,
+    ) -> None:
+        """`ativos` busca as imagens (ex.: `AtivosDoClienteReal`); sem ele, só as iniciais."""
         super().__init__(_respostas_fixas())
+        self._ativos = ativos
         self._escala = escala
         self._acordar = threading.Event()
         self._parar = threading.Event()
@@ -74,6 +82,11 @@ class LcuSimulada(LcuFalsa):
             self.selecao.feiticos(corpo or {})
         self._acordar.set()
         return None
+
+    def get_bytes(self, caminho: str) -> bytes:
+        if caminho in self.arquivos or self._ativos is None:
+            return super().get_bytes(caminho)
+        return self._ativos(caminho)
 
     # ---------- roteiro ----------
 

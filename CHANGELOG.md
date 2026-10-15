@@ -28,6 +28,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 - Página em etapas: barra com fila → partida → intenção → ban → pick → runas → carregando, a etapa atual em destaque, o histórico do que já foi feito ("Ban: Yasuo") e a ordem dos picks dos dois times.
 
+- Fotos dos campeões e feitiços no `--simular`, lidas do cliente de verdade quando ele está aberto (só imagens, só GET).
+- Cache dos ícones em disco (`%LOCALAPPDATA%\LolRemoto\icones`): as fotos carregam rápido depois de reiniciar e aparecem na simulação mesmo com o cliente fechado.
+
 ### Alterado
 - Aplicar runas não muda mais os feitiços; a página só mostra os feitiços sugeridos.
 - Runas e feitiços aparecem na etapa depois do seu pick (no ARAM, logo no começo). Os times só aparecem quando não há ordem de picks (ARAM).

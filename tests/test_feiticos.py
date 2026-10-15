@@ -17,7 +17,7 @@ from lol_remoto.servicos.acoes import ClienteDesconectado
 from lol_remoto.servicos.estado import Estado
 from lol_remoto.servicos.feiticos import LISTA, MINHA_SELECAO, ServicoFeiticos
 
-LISTA_REAL = carregar_fixture("feiticos.json")
+LISTA_REAL = carregar_fixture("feiticos.json")  # lida do cliente real, 10/2026
 
 # ---------- domínio ----------
 
@@ -44,9 +44,10 @@ def test_feiticos_do_rift_e_do_aram():
         "Barreira", "Curar", "Exaustão", "Fantasma", "Flash", "Golpear", "Incendiar",
         "Purificar", "Teleporte",
     ]  # fmt: skip
-    assert "Clareza" in aram and "Marcar" in aram
-    assert "Golpear" not in aram and "Teleporte" not in aram
-    assert "Ao Rei!" not in rift + aram and "Espaço reservado" not in rift + aram
+    assert aram == [
+        "Barreira", "Clareza", "Curar", "Exaustão", "Fantasma", "Flash", "Incendiar", "Marca",
+        "Purificar",
+    ]  # fmt: skip
 
 
 def test_sem_game_modes_usa_a_lista_de_reserva():

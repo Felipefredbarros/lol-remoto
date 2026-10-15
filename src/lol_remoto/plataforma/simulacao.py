@@ -24,16 +24,21 @@ ESTILOS = {8000: "Precisão", 8100: "Dominação", 8200: "Feitiçaria", 8300: "I
 FEITICOS = {1: "Purificar", 3: "Exaustão", 4: "Flash", 6: "Fantasma", 7: "Curar", 11: "Golpear",
             12: "Teleporte", 13: "Clareza", 14: "Incendiar", 21: "Barreira"}  # fmt: skip
 _SO_NO_RIFT, _SO_NO_ARAM = {11, 12}, {13}
+_ICONES_FEITICOS = {1: "Summoner_boost", 3: "Summoner_exhaust", 4: "Summoner_flash",
+                    6: "Summoner_haste", 7: "Summoner_heal", 11: "Summoner_smite",
+                    12: "Summoner_Teleport_New", 13: "SummonerMana", 14: "SummonerIgnite",
+                    21: "SummonerBarrier"}  # fmt: skip
 
 
 def feiticos() -> list[dict[str, Any]]:
-    """A lista de feitiços no formato da LCU, com os modos (sem ícones na simulação)."""
+    """A lista de feitiços no formato da LCU, com os modos e o caminho dos ícones."""
     return [
         {
             "id": i,
             "name": n,
             "gameModes": [m for m, fora in (("CLASSIC", _SO_NO_ARAM), ("ARAM", _SO_NO_RIFT))
                           if i not in fora],
+            "iconPath": f"/lol-game-data/assets/DATA/Spells/Icons2D/{_ICONES_FEITICOS[i]}.png",
         }
         for i, n in FEITICOS.items()
     ]  # fmt: skip

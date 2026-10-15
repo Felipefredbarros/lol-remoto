@@ -148,13 +148,15 @@ Pedido do Felipe depois da ranqueada de 11/10: trocar os feitiços sem mexer nas
 - **Etapas:** `api/passos.py` monta fila → partida → intenção → ban → pick → runas → carregando (sem bans, pula intenção e ban; no ARAM, campeão → runas). A página mostra a barra de etapas, a etapa atual, o histórico ("Intenção: Kai'Sa", "Ban: Yasuo") e a ordem dos picks dos dois times.
 - Conferido com a ranqueada gravada: as etapas seguem intenção → ban → pick → runas. O cliente **zera a intenção** uns 20 s depois do seu pick; depois disso o histórico mostra só "Intenção" (sem dizer qual).
 - Conferido com o `--simular` e um "celular falso" por HTTP: o ciclo inteiro, os feitiços do modo e a troca.
-- **Falta:** o Felipe ver no celular (o visual não foi conferido em navegador) e conferir ao vivo, só com GET, o formato de `summoner-spells.json` (`gameModes`, `iconPath`); a fixture `tests/fixtures/feiticos.json` foi montada à mão.
+- Conferido no cliente real, só com GET: o formato de `summoner-spells.json` (`gameModes`, `iconPath`), agora a fixture `tests/fixtures/feiticos.json`.
+- **Fotos no `--simular`:** a simulação lê as imagens do cliente de verdade, se estiver aberto (`plataforma/ativos_reais.py`, só `/lol-game-data/assets/`), e os ícones ficam em cache em disco (`%LOCALAPPDATA%\LolRemoto\icones`).
+- **Falta:** o Felipe ver no celular (o visual não foi conferido em navegador) e usar numa fila de verdade.
 
 ### 12. Simulação ✅
 `--simular`: um cliente do LoL simulado percorre fila → partida encontrada → seleção → carregamento, para testar o celular sem abrir o LoL.
 - Ciclo: lobby (3 s) → fila (6 s) → partida encontrada (até 10 s; se você não aceitar, sai da fila) → planejamento (10 s) → bans simultâneos (20 s) → picks em 6 turnos (20 s cada) → finalização (8 s) → carregando → em partida (15 s) → fim de jogo → de novo. A cada 3 ciclos alguém dá dodge na finalização.
 - Você é o meio (célula 2). Os outros 9 são bots que agem em 2 a 5 s. Se o tempo acabar, o cliente simulado trava o que estiver marcado (ou sorteia o pick).
-- Reage à página: aceitar/recusar, intenção, marcar/confirmar, runas (página "LoL Remoto") e feitiços. Não há ícones (a página mostra as iniciais).
+- Reage à página: aceitar/recusar, intenção, marcar/confirmar, runas (página "LoL Remoto") e feitiços. Com o cliente aberto, as fotos vêm dele (ver 11b); senão, do cache em disco ou as iniciais.
 - As notificações são reais (ntfy) quando o modo ausente está ligado, então dá para testar os botões Aceitar/Recusar no celular.
 - `tests/test_simulacao.py` roda o ciclo acelerado (1 s = 20 ms) com um jogador automático. Testei também com o servidor completo e um "celular falso" por HTTP.
 - Bug achado no teste manual e corrigido: marcar a intenção encerrava o planejamento na hora.

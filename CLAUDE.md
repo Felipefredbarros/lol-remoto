@@ -52,6 +52,7 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 | plataforma | `plataforma/lcu_simulada.py` | `LcuSimulada` do `--simular`: fila, partida encontrada e o ciclo |
 | plataforma | `plataforma/simulacao_selecao.py` | Seleção simulada com 9 bots; reage às ações da página |
 | plataforma | `plataforma/simulacao.py` | Dados da simulação: campeões, runas e a sessão inicial |
+| plataforma | `plataforma/ativos_reais.py` | Fotos do cliente real para o `--simular` (só GET de `/lol-game-data/assets/`) |
 | plataforma | `plataforma/ntfy.py` | `Notificador` (Protocol), `NotificadorNtfy`, `NotificadorFalso` |
 | plataforma | `plataforma/rede.py` | Descobre o IP do Tailscale |
 | web | `web/` | Interface do celular (HTML/CSS/JS puro, sem build) |

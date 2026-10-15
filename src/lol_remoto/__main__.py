@@ -11,6 +11,7 @@ from pathlib import Path
 
 from lol_remoto import __version__, comandos, config, trocar_pin
 from lol_remoto.app import App
+from lol_remoto.plataforma.ativos_reais import AtivosDoClienteReal
 from lol_remoto.plataforma.lcu_simulada import LcuSimulada
 from lol_remoto.plataforma.lockfile import PASTA_PADRAO, Credenciais
 
@@ -96,7 +97,8 @@ def _executar_app(args: argparse.Namespace) -> int:
     extras = {}
     if args.simular:
         log.warning("Modo simulação: o cliente do LoL é falso (o real não é tocado)")
-        simulada = LcuSimulada()
+        # As fotos vêm do cliente de verdade, se estiver aberto (só imagens, só GET).
+        simulada = LcuSimulada(ativos=AtivosDoClienteReal(args.pasta_lol or Path(cfg.pasta_lol)))
         extras = {
             "conectar": lambda credenciais: simulada,
             "ler_credenciais": lambda: Credenciais(porta=1, senha="simulacao", protocolo="http"),
@@ -105,6 +107,7 @@ def _executar_app(args: argparse.Namespace) -> int:
         cfg,
         pasta_lol=args.pasta_lol or Path(cfg.pasta_lol),
         arquivo_sessoes=args.config.with_name(trocar_pin.ARQUIVO_SESSOES),
+        pasta_icones=config.pasta_logs() / "icones",
         ausente=args.ausente,
         **extras,
     )

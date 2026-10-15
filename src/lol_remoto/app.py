@@ -42,6 +42,7 @@ class App:
         cfg: Config,
         pasta_lol: Path,
         arquivo_sessoes: Path | None,
+        pasta_icones: Path | None = None,
         ausente: bool = False,
         conectar: Callable[[Credenciais], Lcu] = LcuHttp,
         notificador: Notificador | None = None,
@@ -71,7 +72,9 @@ class App:
             runas=ServicoRunas(self.estado, lambda: self.monitor.lcu),
             feiticos=feiticos,
         )
-        self._icones = ServicoIcones(lambda: self.monitor.lcu, feiticos.caminho_icone)
+        self._icones = ServicoIcones(
+            lambda: self.monitor.lcu, feiticos.caminho_icone, pasta=pasta_icones
+        )
         self._canal = CanalSse(self.estado, lambda: visao_de(self.estado))
 
     def endereco(self) -> str | None:

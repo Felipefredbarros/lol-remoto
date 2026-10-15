@@ -16,4 +16,4 @@ Na ADR 0009, aplicar uma runa recomendada também punha os feitiços sugeridos p
 ## Consequências
 - Dá para usar a runa sugerida com outros feitiços, e trocar os feitiços sem mexer nas runas.
 - O Flash não vai mais para o D sozinho; o Felipe escolhe. `flash_no_d` continua só para mostrar a sugestão.
-- **A conferir ao vivo:** o formato de `summoner-spells.json` (`gameModes`, `iconPath`). A fixture `tests/fixtures/feiticos.json` foi montada à mão, porque o cliente estava fechado; troque por uma cópia real quando puder.
+- Conferido no cliente real (15/10/2026, só GET): `summoner-spells.json` tem `gameModes` e `iconPath`, e os ícones vêm como PNG. A lista real (39 feitiços, de vários modos) está em `tests/fixtures/feiticos.json`; filtrada, dá 9 feitiços no Summoner's Rift e 9 no ARAM.
