@@ -44,7 +44,7 @@ def test_valores_opcionais():
             ntfy_servidor="https://ntfy.exemplo.com",
             ntfy_token="tk_1",
             pasta_lol=r"D:\Jogos\LoL",
-            endereco_publico="http://fulupao:8766",
+            endereco_publico="http://meu-pc:8766",
         )
     )
     assert cfg == Config(
@@ -54,7 +54,7 @@ def test_valores_opcionais():
         ntfy_servidor="https://ntfy.exemplo.com",
         ntfy_token="tk_1",
         pasta_lol=r"D:\Jogos\LoL",
-        endereco_publico="http://fulupao:8766",
+        endereco_publico="http://meu-pc:8766",
     )
 
 
@@ -74,7 +74,7 @@ def test_repr_nao_mostra_topico_nem_token():
         _valido(porta=80),
         _valido(porta=True),
         _valido(ntfy_servidor="ftp://x"),
-        _valido(endereco_publico="fulupao:8766"),
+        _valido(endereco_publico="meu-pc:8766"),
         _valido(pasta_lol=123),
     ],
 )
