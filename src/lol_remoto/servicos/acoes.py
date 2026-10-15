@@ -104,10 +104,16 @@ class ServicoAcoes:
         usados = atual.selecao.ja_usados() if atual.selecao else frozenset()
         ids = self._lcu().get(BANIVEIS if tipo is TipoAcao.BAN else PICKAVEIS)
         validos = [i for i in ids or [] if isinstance(i, int) and not isinstance(i, bool)]
-        if not validos and tipo is TipoAcao.BAN:
-            log.warning("O cliente não informou os campeões baníveis; usando o catálogo")
-            validos = [c.id for c in self._estado.catalogo.buscar()]
-        return [i for i in validos if i not in usados]
+        catalogo = self._estado.catalogo
+        conhecidos = [i for i in validos if i in catalogo] if len(catalogo) else validos
+        if not conhecidos and tipo is TipoAcao.BAN:
+            # Em duas ranqueadas a grade do ban ficou vazia; o trecho mostra o que veio.
+            log.warning(
+                "O cliente não informou campeões baníveis conhecidos (%s); usando o catálogo",
+                repr(ids)[:120],
+            )
+            conhecidos = [c.id for c in catalogo.buscar()]
+        return [i for i in conhecidos if i not in usados]
 
     def _validar_campeao(self, campeao: object, tipo: TipoAcao) -> int:
         if isinstance(campeao, bool) or not isinstance(campeao, int) or campeao <= 0:

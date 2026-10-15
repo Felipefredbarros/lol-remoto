@@ -47,6 +47,7 @@ def campeoes(deps: Dependencias, pedido: Pedido) -> Resposta:
     exigir_sessao(deps, pedido)
     tipo = TipoAcao.BAN if pedido.consulta.get("tipo") == "ban" else TipoAcao.PICK
     lista = deps.estado.catalogo.buscar(permitidos=deps.acoes.disponiveis(tipo))
+    log.info("Grade de %s: %d campeões", tipo.value, len(lista))  # diagnóstico do ban vazio
     return Resposta(
         200, {"tipo": tipo.value, "campeoes": [{"id": c.id, "nome": c.nome} for c in lista]}
     )

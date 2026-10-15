@@ -40,5 +40,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - "Partida encontrada!" saía em partidas personalizadas, que não têm nada para aceitar.
 - Eventos do cliente que não chegavam quando o app conectava logo depois de o cliente abrir: agora o app assina o canal geral de eventos e filtra os que usa.
 - O aviso "você saiu da fila" se perdia se o cliente apagasse o ready check antes de mudar de fase.
+- Trocar o feitiço só aparecia na página na troca seguinte: a resposta do botão chegava depois do estado novo (SSE) e redesenhava o anterior. A página agora ignora estados mais velhos que o último mostrado.
+- Grade do ban vazia de novo numa ranqueada (15/10): se a lista do cliente não tiver nenhum campeão conhecido, vale o catálogo, e o log registra o que veio. A página tenta carregar a lista de novo se ela vier vazia.
 - A grade de campeões não oferece mais campeão banido nem já escolhido, mesmo que a lista do cliente traga. No `--simular` dava para escolher um banido.
 - Grade de campeões vazia na hora do ban numa ranqueada: sem a lista de baníveis do cliente, o app oferece todos os campeões, menos os já banidos. A página avisa quando não há campeão para mostrar.

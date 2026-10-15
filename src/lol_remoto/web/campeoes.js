@@ -10,6 +10,7 @@ let tipoAtual = "pick";
 let podeConfirmar = false;
 let selecionado = null;
 let carregando = false;
+const TENTATIVAS = 4; // lista vazia: tenta de novo a cada 2 s (o cliente pode demorar a preencher)
 
 export function iniciar(funcaoAgir) {
   agir = funcaoAgir;
@@ -32,12 +33,7 @@ export async function preparar(tipo, chave, marcado, confirmavel) {
     lista = [];
     carregando = true;
     desenharGrade();
-    let recebida = [];
-    try {
-      recebida = (await chamar("/api/campeoes?tipo=" + tipo)).campeoes;
-    } catch (erro) {
-      mensagem(erro.message, "erro");
-    }
+    const recebida = await carregar(tipo, chave);
     if (chave !== chaveAtual) return; // a ação mudou enquanto a lista chegava
     lista = recebida;
     carregando = false;
@@ -46,6 +42,19 @@ export async function preparar(tipo, chave, marcado, confirmavel) {
     selecionado = lista.find((c) => c.id === marcado) || selecionado;
   }
   desenharGrade();
+}
+
+async function carregar(tipo, chave) {
+  for (let tentativa = 0; tentativa < TENTATIVAS && chave === chaveAtual; tentativa++) {
+    if (tentativa > 0) await new Promise((pronto) => setTimeout(pronto, 2000));
+    try {
+      const recebida = (await chamar("/api/campeoes?tipo=" + tipo)).campeoes;
+      if (recebida.length) return recebida;
+    } catch (erro) {
+      mensagem(erro.message, "erro");
+    }
+  }
+  return [];
 }
 
 export function esquecer() {

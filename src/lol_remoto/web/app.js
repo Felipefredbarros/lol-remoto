@@ -11,8 +11,13 @@ import { el, mensagem } from "./util.js";
 
 let fonte = null;
 let religar = null;
+let versaoMostrada = -1;
 
+// A resposta de um botão pode chegar depois de um estado mais novo vindo pelo SSE (ex.: trocar
+// o feitiço): sem esta conferência, a página voltava a mostrar o feitiço anterior.
 function desenhar(estado) {
+  if (estado.versao < versaoMostrada) return;
+  versaoMostrada = estado.versao;
   etapas.desenhar(estado);
   painel.desenhar(estado);
   selecao.desenhar(estado);
@@ -36,6 +41,7 @@ function mostrarApp() {
 
 function conectar() {
   clearTimeout(religar);
+  versaoMostrada = -1; // o servidor pode ter reiniciado (a versão recomeça do zero)
   if (fonte) fonte.close();
   fonte = ouvir((estado) => {
     painel.conexao("");
@@ -51,6 +57,7 @@ async function caiu(origem) {
     return;
   }
   try {
+    versaoMostrada = -1;
     desenhar(await chamar("/api/estado"));
   } catch (erro) {
     if (erro.status === 401) {
@@ -76,6 +83,7 @@ async function agir(caminho, corpo, textoSucesso) {
 el("form-login").addEventListener("submit", async (evento) => {
   evento.preventDefault();
   try {
+    versaoMostrada = -1;
     desenhar(await chamar("/api/entrar", { pin: el("pin").value.trim() }));
     el("pin").value = "";
     mensagem("");

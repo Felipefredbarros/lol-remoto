@@ -169,9 +169,10 @@ def test_disponiveis_ignora_lixo(estado, acoes, lcu):
     assert acoes.disponiveis(TipoAcao.PICK) == [1, 3]
 
 
-@pytest.mark.parametrize("resposta", [[], None])
+@pytest.mark.parametrize("resposta", [[], None, [70001, 70002]])
 def test_ban_sem_lista_do_cliente_usa_o_catalogo(resposta, estado, acoes, lcu, sessao_draft):
-    """Numa ranqueada real a grade do ban ficou vazia: o cliente não mandou os baníveis."""
+    """Em duas ranqueadas a grade do ban ficou vazia. Sem lista, ou sem nenhum campeão
+    conhecido nela, vale o catálogo."""
     for turno in sessao_draft["actions"]:
         for acao in turno:
             acao["isInProgress"] = False
