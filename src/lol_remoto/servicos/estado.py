@@ -15,6 +15,7 @@ from dataclasses import dataclass, replace
 from lol_remoto.dominio.avisos import Momento
 from lol_remoto.dominio.campeoes import Catalogo
 from lol_remoto.dominio.fase import Fase
+from lol_remoto.dominio.feiticos import Feitico
 from lol_remoto.dominio.ready_check import ReadyCheck
 from lol_remoto.dominio.selecao import Selecao
 
@@ -47,6 +48,7 @@ class Estado:
         self._ouvintes: list[Ouvinte] = []
         self._relogio = relogio
         self.catalogo = Catalogo([])  # recarregado a cada conexão com o cliente
+        self.feiticos: list[Feitico] = []  # idem (summoner-spells.json)
 
     @property
     def atual(self) -> Retrato:

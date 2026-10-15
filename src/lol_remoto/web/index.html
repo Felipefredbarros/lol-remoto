@@ -62,8 +62,18 @@
           <button id="confirmar" class="botao grande" type="button" disabled>Confirmar</button>
         </section>
 
+        <section id="feiticos" class="cartao" hidden>
+          <p class="rotulo">Feitiços</p>
+          <div class="grade">
+            <button id="feitico-d" class="feitico" type="button" aria-pressed="false">D</button>
+            <button id="feitico-f" class="feitico" type="button" aria-pressed="false">F</button>
+          </div>
+          <div id="grade-feiticos" class="grade-campeoes" hidden></div>
+          <p class="dica">Toque no D ou no F para trocar. Escolher o feitiço da outra tecla troca os dois de lugar.</p>
+        </section>
+
         <section id="runas" class="cartao" hidden>
-          <p class="rotulo">Runas e feitiços</p>
+          <p class="rotulo">Runas</p>
           <button id="ver-runas" class="botao secundario" type="button">Ver runas recomendadas</button>
           <div id="lista-runas" class="pilha"></div>
         </section>

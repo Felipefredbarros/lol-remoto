@@ -1,4 +1,4 @@
-"""Rotas que agem no cliente do LoL: partida encontrada, ban/pick e ARAM.
+"""Rotas que agem no cliente do LoL: partida encontrada, ban/pick, ARAM, runas e feitiços.
 
 A trava de fase ("nada dentro da partida") fica em `servicos/acoes.py`.
 """
@@ -62,8 +62,8 @@ def runas(deps: Dependencias, pedido: Pedido) -> Resposta:
     """As 3 runas recomendadas pelo cliente para o meu campeão, com nomes para a página."""
     exigir_sessao(deps, pedido)
     recomendacoes = deps.runas.recomendacoes()
-    estilos = deps.runas.nomes("estilos")
-    feiticos = deps.runas.nomes("feiticos")
+    estilos = deps.runas.estilos()
+    feiticos = deps.feiticos.nomes()
     return Resposta(
         200,
         {
@@ -89,3 +89,16 @@ def aplicar_runas(deps: Dependencias, pedido: Pedido) -> Resposta:
         sobrescrever_atual=pedido.corpo.get("sobrescrever_atual") is True,
     )
     return Resposta(200, {"aplicada": escolhida.principal})
+
+
+def feiticos(deps: Dependencias, pedido: Pedido) -> Resposta:
+    """Os feitiços que valem no modo da seleção atual (os atuais vêm no estado)."""
+    exigir_sessao(deps, pedido)
+    lista = deps.feiticos.lista()
+    return Resposta(200, {"disponiveis": [{"id": f.id, "nome": f.nome} for f in lista]})
+
+
+def trocar_feitico(deps: Dependencias, pedido: Pedido) -> Resposta:
+    exigir_sessao(deps, pedido)
+    deps.feiticos.trocar(pedido.corpo.get("slot"), pedido.corpo.get("feitico"))
+    return resposta_estado(deps)

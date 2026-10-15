@@ -1,6 +1,7 @@
 // Tela da seleção de campeões: etapa, timer, de quem é a vez, bans e os dois times.
 
 import * as campeoes from "./campeoes.js";
+import * as feiticos from "./feiticos.js";
 import * as runas from "./runas.js";
 import { contar, criar, el, icone } from "./util.js";
 
@@ -20,6 +21,7 @@ export function desenhar(estado) {
     contar(el("timer"), null);
     campeoes.esquecer();
     runas.preparar(null);
+    feiticos.preparar(null);
     return;
   }
   const eu = selecao.aliados.find((j) => j.eu) || null;
@@ -29,6 +31,7 @@ export function desenhar(estado) {
 
   desenharAcao(selecao, eu);
   runas.preparar(eu ? eu.campeao : null);
+  feiticos.preparar(eu ? eu.feiticos : null);
   el("cartao-bans").hidden = selecao.aram;
   desenharBans(el("bans-aliados"), selecao.bans.aliados);
   desenharBans(el("bans-inimigos"), selecao.bans.inimigos);

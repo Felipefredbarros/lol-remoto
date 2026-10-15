@@ -13,6 +13,7 @@ from lol_remoto.plataforma.lockfile import Credenciais
 from lol_remoto.plataforma.ntfy import NotificadorFalso
 from lol_remoto.servicos.acoes import ServicoAcoes
 from lol_remoto.servicos.estado import Estado
+from lol_remoto.servicos.feiticos import ServicoFeiticos
 from lol_remoto.servicos.monitor import Monitor
 from lol_remoto.servicos.notificacoes import ServicoNotificacoes
 from lol_remoto.servicos.runas import ServicoRunas
@@ -36,6 +37,7 @@ class _Partida:
         )
         self.acoes = ServicoAcoes(self.estado, lambda: self.monitor.lcu)
         self.runas = ServicoRunas(self.estado, lambda: self.monitor.lcu)
+        self.feiticos = ServicoFeiticos(self.estado, lambda: self.monitor.lcu)
         self.feito: set = set()
         self.erros: list[Exception] = []
         self.inicio_das_etapas: dict[str, float] = {}
@@ -64,6 +66,7 @@ class _Partida:
             if selecao.eu and selecao.eu.campeao and "runas" not in self.feito:
                 self.feito.add("runas")
                 self.runas.aplicar(0)
+                self.feiticos.trocar("f", 12)  # Teleporte no F (o D continua Flash)
         except Exception as erro:  # noqa: BLE001 - conferido no teste
             self.erros.append(erro)
 
@@ -113,7 +116,7 @@ def test_ciclo_completo_pela_fila(criar):
     assert ("PUT", "/lol-perks/v1/pages/1") in chamadas  # runas na "LoL Remoto"
     feiticos = [c for c in p.lcu.chamadas if c[1].endswith("/my-selection")]
     assert feiticos == [("PATCH", "/lol-champ-select/v1/session/my-selection",
-                         {"spell1Id": 4, "spell2Id": 14})]  # fmt: skip
+                         {"spell1Id": 4, "spell2Id": 12})]  # fmt: skip
 
 
 def test_planejamento_dura_o_tempo_todo_mesmo_declarando_intencao(criar):

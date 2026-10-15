@@ -6,8 +6,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from lol_remoto.dominio.feiticos import flash_no_d
+
 NOME_PAGINA = "LoL Remoto"  # a página que o app pode sobrescrever (ADR 0009)
-FLASH = 4
 MAPA_SUMMONERS_RIFT = 11
 MAPA_ARAM = 12
 
@@ -20,18 +21,11 @@ class Recomendacao:
     runas: tuple[int, ...]  # a runa principal (keystone) primeiro
     principal: str  # nome da runa principal, ex.: "Eletrocutar"
     descricao: str  # ex.: "Dano de combo"
-    feiticos: tuple[int, ...]  # já com o Flash no D
+    feiticos: tuple[int, ...]  # sugestão do cliente, já com o Flash no D (só para mostrar)
 
 
 def _int(valor: object) -> int | None:
     return valor if isinstance(valor, int) and not isinstance(valor, bool) else None
-
-
-def flash_no_d(feiticos: tuple[int, ...]) -> tuple[int, ...]:
-    """O Felipe usa o Flash no D: se a recomendação trouxer o Flash no F, inverte."""
-    if len(feiticos) == 2 and feiticos[1] == FLASH:
-        return (FLASH, feiticos[0])
-    return feiticos
 
 
 def recomendacoes_de(dados: object) -> list[Recomendacao]:

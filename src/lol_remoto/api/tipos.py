@@ -6,11 +6,12 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from lol_remoto.api.visao import visao
+from lol_remoto.api.visao import visao_de
 from lol_remoto.plataforma.ntfy import Notificador
 from lol_remoto.servicos.acoes import ServicoAcoes
 from lol_remoto.servicos.autenticacao import ServicoAutenticacao
 from lol_remoto.servicos.estado import Estado
+from lol_remoto.servicos.feiticos import ServicoFeiticos
 from lol_remoto.servicos.runas import ServicoRunas
 from lol_remoto.servicos.sessoes import ServicoSessoes
 from lol_remoto.servicos.tokens import ServicoTokens
@@ -50,6 +51,7 @@ class Dependencias:
     tokens: ServicoTokens
     notificador: Notificador
     runas: ServicoRunas
+    feiticos: ServicoFeiticos
 
 
 Rota = Callable[[Dependencias, Pedido], Resposta]
@@ -62,4 +64,4 @@ def exigir_sessao(deps: Dependencias, pedido: Pedido) -> None:
 
 def resposta_estado(deps: Dependencias) -> Resposta:
     """A maioria das rotas devolve o estado atualizado, igual ao de /api/estado."""
-    return Resposta(200, visao(deps.estado.atual, deps.estado.catalogo, deps.estado.agora()))
+    return Resposta(200, visao_de(deps.estado))

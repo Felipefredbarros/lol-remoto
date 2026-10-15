@@ -1,6 +1,6 @@
 # 0009 — Runas recomendadas do cliente, gravadas na página "LoL Remoto"
 
-**Status:** aceita · **Data:** 2026-10-10
+**Status:** aceita; a parte dos feitiços foi substituída pela [ADR 0010](0010-feiticos-separados-das-runas.md) · **Data:** 2026-10-10
 
 ## Contexto
 O Felipe quer escolher as runas pelo celular durante a seleção. O cliente já mostra 3 páginas **recomendadas** para o campeão e a posição (`/lol-perks/v1/recommended-pages/champion/{id}/position/{pos}/map/{mapa}`), com os feitiços recomendados. Não existe na LCU um comando de "aplicar recomendação": o clique no cliente monta uma página com esses dados.

@@ -49,6 +49,7 @@ class Jogador:
     campeao: int  # marcado ou confirmado; 0 = nenhum
     intencao: int  # intenção declarada no planejamento; 0 = nenhuma
     nome: str | None  # None quando o cliente esconde o nome
+    feiticos: tuple[int, int] = (0, 0)  # (D, F); 0 = nenhum
 
 
 @dataclass(frozen=True)
@@ -151,6 +152,7 @@ def _jogador(dados: object, aliado: bool) -> Jogador:
         campeao=_int(dados, "championId"),
         intencao=_int(dados, "championPickIntent"),
         nome=f"{nome}#{tag}" if nome and tag else nome,
+        feiticos=(_int(dados, "spell1Id"), _int(dados, "spell2Id")),
     )
 
 

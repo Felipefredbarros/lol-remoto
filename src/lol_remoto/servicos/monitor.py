@@ -12,6 +12,7 @@ from typing import Any
 
 from lol_remoto.dominio.campeoes import Catalogo
 from lol_remoto.dominio.fase import Fase, fase_de
+from lol_remoto.dominio.feiticos import feiticos_de
 from lol_remoto.dominio.ready_check import ready_check_de
 from lol_remoto.dominio.selecao import Selecao, SelecaoInvalida, selecao_de
 from lol_remoto.plataforma import lockfile
@@ -31,6 +32,7 @@ from lol_remoto.servicos.estado import Estado
 log = logging.getLogger(__name__)
 
 CATALOGO = "/lol-game-data/assets/v1/champion-summary.json"
+FEITICOS = "/lol-game-data/assets/v1/summoner-spells.json"
 INTERVALO_LOCKFILE = 3.0  # segundos
 
 # Fases em que a sessão da seleção interessa (ela pode chegar antes do evento de fase).
@@ -107,8 +109,9 @@ class Monitor:
     def _carregar_estado_inicial(self, lcu: Lcu) -> None:
         try:
             self._estado.catalogo = Catalogo.de_json(lcu.get(CATALOGO))
+            self._estado.feiticos = feiticos_de(lcu.get(FEITICOS))
         except ErroLcu as erro:
-            log.warning("Não foi possível carregar os campeões: %s", erro)
+            log.warning("Não foi possível carregar os campeões e feitiços: %s", erro)
         fase = fase_de(lcu.get(FASE))
         selecao = self._ler_selecao(lcu.get(SESSAO_SELECAO)) if fase is Fase.SELECAO else None
         ready_check = (

@@ -21,6 +21,7 @@ from lol_remoto.api.tipos import (
     Rota,
 )
 from lol_remoto.dominio.fase import ForaDeFase
+from lol_remoto.dominio.feiticos import FeiticoIndisponivel
 from lol_remoto.plataforma.lcu import ErroLcu
 from lol_remoto.plataforma.ntfy import ErroNotificacao
 from lol_remoto.servicos.acoes import AcaoIndisponivel, CampeaoIndisponivel, ClienteDesconectado
@@ -44,12 +45,15 @@ ROTAS: dict[tuple[str, str], Rota] = {
     ("POST", "/api/selecao/aram/trocar"): rotas_cliente.trocar_do_banco,
     ("GET", "/api/runas"): rotas_cliente.runas,
     ("POST", "/api/runas/aplicar"): rotas_cliente.aplicar_runas,
+    ("GET", "/api/feiticos"): rotas_cliente.feiticos,
+    ("POST", "/api/feiticos"): rotas_cliente.trocar_feitico,
 }
 
 _STATUS_POR_ERRO: dict[type[Exception], int] = {
     RequisicaoInvalida: 400,
     CampeaoIndisponivel: 400,
     EscolhaInvalida: 400,
+    FeiticoIndisponivel: 400,
     NaoAutenticado: 401,
     PinIncorreto: 401,
     ForaDeFase: 409,

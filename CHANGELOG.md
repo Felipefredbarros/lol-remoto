@@ -24,6 +24,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Runas recomendadas pelo próprio cliente, aplicadas pelo celular na página "LoL Remoto", com os feitiços recomendados e o Flash sempre no D.
 - Página do celular: login, modo ausente, partida encontrada com Aceitar/Recusar, seleção de campeões ao vivo (bans, times, timer, sua vez), grade de campeões com busca e runas recomendadas.
 - Opção `--simular`: cliente do LoL simulado com bots (fila, partida encontrada, seleção, dodge) para testar o celular sem abrir o jogo.
+- Feitiços pelo celular, separados das runas: botões D e F com a grade dos feitiços do modo. Escolher o feitiço da outra tecla troca os dois de lugar.
+
+### Alterado
+- Aplicar runas não muda mais os feitiços; a página só mostra os feitiços sugeridos.
 
 ### Corrigido
 - "Sua vez de banir" saía no início do planejamento, e não quando os bans começavam.

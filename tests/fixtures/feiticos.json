@@ -1,0 +1,15 @@
+[
+  {"id": 1, "name": "Purificar", "summonerLevel": 9, "gameModes": ["URF", "CLASSIC", "ARAM", "ONEFORALL", "TUTORIAL", "ARSR", "NEXUSBLITZ"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_boost.png"},
+  {"id": 3, "name": "Exaustão", "summonerLevel": 4, "gameModes": ["ARAM", "CLASSIC", "TUTORIAL", "URF", "ONEFORALL", "NEXUSBLITZ"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_Exhaust.png"},
+  {"id": 4, "name": "Flash", "summonerLevel": 7, "gameModes": ["CLASSIC", "ARAM", "TUTORIAL", "URF", "ONEFORALL", "NEXUSBLITZ"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_flash.png"},
+  {"id": 6, "name": "Fantasma", "summonerLevel": 1, "gameModes": ["CLASSIC", "ARAM", "TUTORIAL", "URF", "ONEFORALL", "NEXUSBLITZ"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_haste.png"},
+  {"id": 7, "name": "Curar", "summonerLevel": 1, "gameModes": ["CLASSIC", "ARAM", "TUTORIAL", "URF", "ONEFORALL", "NEXUSBLITZ"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_heal.png"},
+  {"id": 11, "name": "Golpear", "summonerLevel": 3, "gameModes": ["URF", "CLASSIC", "TUTORIAL", "ONEFORALL", "NEXUSBLITZ"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_smite.png"},
+  {"id": 12, "name": "Teleporte", "summonerLevel": 7, "gameModes": ["CLASSIC", "TUTORIAL", "ONEFORALL"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_teleport_new.png"},
+  {"id": 13, "name": "Clareza", "summonerLevel": 6, "gameModes": ["ARAM"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_Mana.png"},
+  {"id": 14, "name": "Incendiar", "summonerLevel": 9, "gameModes": ["CLASSIC", "ARAM", "TUTORIAL", "URF", "ONEFORALL", "NEXUSBLITZ"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_dot.png"},
+  {"id": 21, "name": "Barreira", "summonerLevel": 4, "gameModes": ["CLASSIC", "ARAM", "TUTORIAL", "URF", "ONEFORALL", "NEXUSBLITZ"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_barrier.png"},
+  {"id": 30, "name": "Ao Rei!", "summonerLevel": 1, "gameModes": ["KINGPORO"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_PoroRecall.png"},
+  {"id": 32, "name": "Marcar", "summonerLevel": 6, "gameModes": ["ARAM"], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_Mark.png"},
+  {"id": 54, "name": "Espaço reservado", "summonerLevel": 1, "gameModes": [], "iconPath": "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_UltBookPlaceholder.png"}
+]

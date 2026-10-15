@@ -104,7 +104,10 @@ No ARAM não há ação de pick. A tela mostra o seu campeão e o banco, com **R
 | `POST /api/selecao/confirmar` `{campeao?}` | sim | Trava o ban/pick |
 | `POST /api/selecao/aram/reroll` e `/trocar` `{campeao}` | sim | ARAM |
 | `GET /api/runas` | sim | As 3 runas recomendadas pelo cliente para o seu campeão |
-| `POST /api/runas/aplicar` `{indice, sobrescrever_atual?}` | sim | Grava na página "LoL Remoto" e põe os feitiços (Flash no D); ver [ADR 0009](decisoes/0009-runas-recomendadas-na-pagina-lol-remoto.md) |
+| `POST /api/runas/aplicar` `{indice, sobrescrever_atual?}` | sim | Grava na página "LoL Remoto" (só as runas); ver [ADR 0009](decisoes/0009-runas-recomendadas-na-pagina-lol-remoto.md) |
+| `GET /api/feiticos` | sim | Feitiços que valem no modo da seleção (os atuais vêm no estado) |
+| `POST /api/feiticos` `{slot: d\|f, feitico}` | sim | Troca o feitiço do D ou do F; o mesmo da outra tecla troca os dois; ver [ADR 0010](decisoes/0010-feiticos-separados-das-runas.md) |
+| `GET /api/feiticos/<id>.png` | sim | Ícone do feitiço (caminho tirado da lista do cliente, em cache) |
 
 Status: 400 (entrada inválida), 401 (sem sessão/PIN), 409 (fora de fase ou não é a sua vez), 429 (bloqueio), 502 (LCU/ntfy recusou), 503 (cliente fechado).
 

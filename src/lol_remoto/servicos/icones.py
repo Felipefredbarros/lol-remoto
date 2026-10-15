@@ -1,4 +1,4 @@
-"""Ícones dos campeões, buscados na LCU e guardados em memória.
+"""Ícones dos campeões e dos feitiços, buscados na LCU e guardados em memória.
 
 Servir pelo próprio PC mantém a CSP `default-src 'self'` e não depende de internet.
 """
@@ -8,30 +8,49 @@ from __future__ import annotations
 import threading
 from collections.abc import Callable
 
+from lol_remoto.dominio.feiticos import PREFIXO_ICONE, FeiticoIndisponivel
 from lol_remoto.plataforma.lcu import Lcu
 from lol_remoto.servicos.acoes import CampeaoIndisponivel, ClienteDesconectado
 
 CAMINHO = "/lol-game-data/assets/v1/champion-icons/{id}.png"
-LIMITE_CACHE = 400  # ~30 KB cada; cabe o catálogo inteiro
+LIMITE_CACHE = 450  # ~30 KB cada; cabe o catálogo inteiro e os feitiços
 
 
 class ServicoIcones:
-    def __init__(self, obter_lcu: Callable[[], Lcu | None]) -> None:
+    def __init__(
+        self,
+        obter_lcu: Callable[[], Lcu | None],
+        caminho_feitico: Callable[[int], str | None] = lambda _id: None,
+    ) -> None:
+        """`caminho_feitico` dá o `iconPath` de um feitiço (normalmente `ServicoFeiticos`)."""
         self._obter_lcu = obter_lcu
-        self._cache: dict[int, bytes] = {}
+        self._caminho_feitico = caminho_feitico
+        self._cache: dict[tuple[str, int], bytes] = {}
         self._trava = threading.Lock()
 
     def icone(self, campeao: int) -> bytes:
         if campeao <= 0:
             raise CampeaoIndisponivel("Campeão inválido.")
+        return self._buscar(("campeao", campeao), lambda: CAMINHO.format(id=campeao))
+
+    def icone_feitico(self, feitico: int) -> bytes:
+        def caminho() -> str:
+            encontrado = self._caminho_feitico(feitico)
+            if not encontrado or not encontrado.startswith(PREFIXO_ICONE):
+                raise FeiticoIndisponivel("Feitiço sem ícone.")
+            return encontrado
+
+        return self._buscar(("feitico", feitico), caminho)
+
+    def _buscar(self, chave: tuple[str, int], caminho: Callable[[], str]) -> bytes:
         with self._trava:
-            if campeao in self._cache:
-                return self._cache[campeao]
+            if chave in self._cache:
+                return self._cache[chave]
         lcu = self._obter_lcu()
         if lcu is None:
             raise ClienteDesconectado("O cliente do LoL não está aberto.")
-        dados = lcu.get_bytes(CAMINHO.format(id=campeao))
+        dados = lcu.get_bytes(caminho())
         with self._trava:
             if len(self._cache) < LIMITE_CACHE:
-                self._cache[campeao] = dados
+                self._cache[chave] = dados
         return dados

@@ -23,6 +23,20 @@ ESTILOS = {8000: "Precisão", 8100: "Dominação", 8200: "Feitiçaria", 8300: "I
            8400: "Determinação"}  # fmt: skip
 FEITICOS = {1: "Purificar", 3: "Exaustão", 4: "Flash", 6: "Fantasma", 7: "Curar", 11: "Golpear",
             12: "Teleporte", 13: "Clareza", 14: "Incendiar", 21: "Barreira"}  # fmt: skip
+_SO_NO_RIFT, _SO_NO_ARAM = {11, 12}, {13}
+
+
+def feiticos() -> list[dict[str, Any]]:
+    """A lista de feitiços no formato da LCU, com os modos (sem ícones na simulação)."""
+    return [
+        {
+            "id": i,
+            "name": n,
+            "gameModes": [m for m, fora in (("CLASSIC", _SO_NO_ARAM), ("ARAM", _SO_NO_RIFT))
+                          if i not in fora],
+        }
+        for i, n in FEITICOS.items()
+    ]  # fmt: skip
 
 
 def _recomendacao(principal, nome, descricao, secundario, runas, feiticos) -> dict[str, Any]:

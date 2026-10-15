@@ -71,8 +71,10 @@ def test_visao_tem_os_campos_que_a_pagina_usa(sessao_draft):
     esperados = {"aram", "etapa", "planejamento", "segundos_restantes", "minha_vez", "bans"}
     assert esperados | {"aliados", "inimigos"} <= set(selecao)
     assert {"aliados", "inimigos"} == set(selecao["bans"])
-    campos = {"eu", "nome", "posicao", "campeao", "intencao", "confirmado", "agindo"}
+    campos = {"eu", "nome", "posicao", "campeao", "intencao", "confirmado", "agindo", "feiticos"}
     assert campos <= set(selecao["aliados"][0])
+    eu = next(j for j in selecao["aliados"] if j["eu"])
+    assert set(eu["feiticos"]) == {"d", "f"}  # feiticos.js lê feiticos.d e feiticos.f
 
 
 @pytest.fixture

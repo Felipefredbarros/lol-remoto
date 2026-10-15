@@ -1,7 +1,8 @@
-"""Aplica uma das runas recomendadas pelo cliente, com os feitiços, durante a seleção.
+"""Aplica uma das runas recomendadas pelo cliente durante a seleção.
 
 Grava na página "LoL Remoto" (ou cria uma, se houver espaço). Sobrescrever outra página
-só com confirmação explícita (docs/decisoes/0009).
+só com confirmação explícita (docs/decisoes/0009). Os feitiços ficam à parte, em
+`servicos/feiticos.py` (docs/decisoes/0010).
 """
 
 from __future__ import annotations
@@ -33,8 +34,6 @@ PAGINA = "/lol-perks/v1/pages/{id}"
 PAGINA_ATUAL = "/lol-perks/v1/currentpage"
 INVENTARIO = "/lol-perks/v1/inventory"
 ESTILOS = "/lol-perks/v1/styles"
-FEITICOS = "/lol-game-data/assets/v1/summoner-spells.json"
-MINHA_SELECAO = "/lol-champ-select/v1/session/my-selection"
 
 
 class SemPaginaLivre(RuntimeError):
@@ -49,7 +48,7 @@ class ServicoRunas:
     def __init__(self, estado: Estado, obter_lcu: Callable[[], Lcu | None]) -> None:
         self._estado = estado
         self._obter_lcu = obter_lcu
-        self._nomes: dict[str, dict[int, str]] = {}  # "estilos"/"feiticos" → id → nome
+        self._estilos: dict[int, str] | None = None  # id → nome
 
     def _lcu(self) -> Lcu:
         lcu = self._obter_lcu()
@@ -69,15 +68,14 @@ class ServicoRunas:
         )
         return recomendacoes_de(self._lcu().get(caminho))
 
-    def nomes(self, tipo: str) -> dict[int, str]:
-        """Nomes dos estilos de runa ou dos feitiços (em cache depois da 1ª vez)."""
-        if tipo not in self._nomes:
-            caminho = ESTILOS if tipo == "estilos" else FEITICOS
-            itens = self._lcu().get(caminho) or []
-            self._nomes[tipo] = {
+    def estilos(self) -> dict[int, str]:
+        """Nomes dos estilos de runa (em cache depois da 1ª vez)."""
+        if self._estilos is None:
+            itens = self._lcu().get(ESTILOS) or []
+            self._estilos = {
                 i["id"]: str(i.get("name", "")) for i in itens if isinstance(i, dict) and "id" in i
             }
-        return self._nomes[tipo]
+        return self._estilos
 
     def _pagina_destino(self, lcu: Lcu, sobrescrever_atual: bool) -> dict[str, Any] | None:
         """A página a sobrescrever, ou None para criar uma nova."""
@@ -111,8 +109,5 @@ class ServicoRunas:
             lcu.enviar(
                 "PUT", PAGINA.format(id=pagina["id"]), corpo_pagina(escolhida, pagina["name"])
             )
-        if len(escolhida.feiticos) == 2:
-            primeiro, segundo = escolhida.feiticos
-            lcu.enviar("PATCH", MINHA_SELECAO, {"spell1Id": primeiro, "spell2Id": segundo})
         log.info("Runas aplicadas: %s (%s)", escolhida.principal, escolhida.descricao)
         return escolhida

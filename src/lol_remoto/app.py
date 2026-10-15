@@ -14,7 +14,7 @@ from pathlib import Path
 from lol_remoto.api.servidor import criar_servidor
 from lol_remoto.api.sse import CanalSse
 from lol_remoto.api.tipos import Dependencias
-from lol_remoto.api.visao import visao
+from lol_remoto.api.visao import visao_de
 from lol_remoto.config import Config
 from lol_remoto.plataforma.lcu import Lcu, LcuHttp
 from lol_remoto.plataforma.lockfile import Credenciais
@@ -23,6 +23,7 @@ from lol_remoto.plataforma.rede import descobrir_ip_tailscale
 from lol_remoto.servicos.acoes import ServicoAcoes
 from lol_remoto.servicos.autenticacao import ServicoAutenticacao
 from lol_remoto.servicos.estado import Estado
+from lol_remoto.servicos.feiticos import ServicoFeiticos
 from lol_remoto.servicos.icones import ServicoIcones
 from lol_remoto.servicos.monitor import Monitor
 from lol_remoto.servicos.notificacoes import ServicoNotificacoes
@@ -56,6 +57,7 @@ class App:
             cfg.ntfy_servidor, cfg.ntfy_topico, cfg.ntfy_token
         )
         tokens = ServicoTokens()
+        feiticos = ServicoFeiticos(self.estado, lambda: self.monitor.lcu)
         self.notificacoes = ServicoNotificacoes(
             self.estado, self.notificador, endereco=self.endereco, tokens=tokens
         )
@@ -67,11 +69,10 @@ class App:
             tokens=tokens,
             notificador=self.notificador,
             runas=ServicoRunas(self.estado, lambda: self.monitor.lcu),
+            feiticos=feiticos,
         )
-        self._icones = ServicoIcones(lambda: self.monitor.lcu)
-        self._canal = CanalSse(
-            self.estado, lambda: visao(self.estado.atual, self.estado.catalogo, self.estado.agora())
-        )
+        self._icones = ServicoIcones(lambda: self.monitor.lcu, feiticos.caminho_icone)
+        self._canal = CanalSse(self.estado, lambda: visao_de(self.estado))
 
     def endereco(self) -> str | None:
         """URL da página para o celular (link e botões da notificação)."""

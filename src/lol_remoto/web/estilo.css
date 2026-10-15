@@ -201,6 +201,36 @@ input:focus-visible, button:focus-visible {
 .campeao span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .campeao[aria-pressed="true"] { border-color: var(--destaque); background: var(--fundo); }
 
+.feitico {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 8px 10px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--texto);
+  background: var(--fundo);
+  border: 2px solid var(--borda);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.feitico[aria-pressed="true"] { border-color: var(--destaque); }
+.feitico .nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tecla {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111827;
+  background: var(--destaque);
+  border-radius: 6px;
+}
+
 .runa {
   text-align: left;
   display: flex;

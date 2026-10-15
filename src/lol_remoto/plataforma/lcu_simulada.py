@@ -34,9 +34,7 @@ def _respostas_fixas() -> dict[str, Any]:
         "/lol-champ-select/v1/bannable-champion-ids": ids,
         "/lol-perks/v1/pages": [{"id": 1, "name": "LoL Remoto", "isEditable": True}],
         "/lol-perks/v1/styles": [{"id": i, "name": n} for i, n in sim.ESTILOS.items()],
-        "/lol-game-data/assets/v1/summoner-spells.json": [
-            {"id": i, "name": n} for i, n in sim.FEITICOS.items()
-        ],
+        "/lol-game-data/assets/v1/summoner-spells.json": sim.feiticos(),
     }
     for campeao in ids:
         caminho = f"/lol-perks/v1/recommended-pages/champion/{campeao}/position/MIDDLE/map/11"

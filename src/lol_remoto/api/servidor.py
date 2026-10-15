@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+from collections.abc import Callable
 from http.cookies import CookieError, SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -22,6 +23,7 @@ PASTA_WEB = Path(__file__).resolve().parent.parent / "web"
 TAMANHO_MAXIMO_CORPO = 4096
 TEMPO_LIMITE_CONEXAO = 10  # segundos
 _ICONE = re.compile(r"^/api/campeoes/(\d{1,6})\.png$")
+_ICONE_FEITICO = re.compile(r"^/api/feiticos/(\d{1,6})\.png$")
 
 _TIPOS = {
     ".html": "text/html; charset=utf-8",
@@ -96,7 +98,10 @@ def criar_servidor(
                 self._transmitir(pedido)
                 return
             if metodo == "GET" and (icone := _ICONE.match(caminho)):
-                self._enviar_icone(pedido, int(icone.group(1)))
+                self._enviar_icone(pedido, lambda: icones.icone(int(icone.group(1))))
+                return
+            if metodo == "GET" and (icone := _ICONE_FEITICO.match(caminho)):
+                self._enviar_icone(pedido, lambda: icones.icone_feitico(int(icone.group(1))))
                 return
             if metodo == "POST":
                 recusa = self._validar_post()
@@ -141,14 +146,14 @@ def criar_servidor(
 
             canal.transmitir(escrever)
 
-        def _enviar_icone(self, pedido: Pedido, campeao: int) -> None:
+        def _enviar_icone(self, pedido: Pedido, buscar: Callable[[], bytes]) -> None:
             if not deps.sessoes.valida(pedido.sessao):
                 self._enviar_json(Resposta(401, {"erro": "Entre com o PIN."}))
                 return
             try:
-                dados = icones.icone(campeao)
-            except Exception as erro:  # cliente fechado, campeão inexistente...
-                log.debug("Ícone %s indisponível: %s", campeao, erro)
+                dados = buscar()
+            except Exception as erro:  # cliente fechado, campeão ou feitiço inexistente...
+                log.debug("Ícone %s indisponível: %s", self.path, erro)
                 self._enviar_json(Resposta(404, {"erro": "Ícone indisponível."}))
                 return
             self._enviar(200, "image/png", dados, {"Cache-Control": "private, max-age=86400"})

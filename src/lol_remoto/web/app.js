@@ -2,6 +2,7 @@
 
 import { chamar, ErroApi, ouvir } from "./api.js";
 import * as campeoes from "./campeoes.js";
+import * as feiticos from "./feiticos.js";
 import * as painel from "./painel.js";
 import * as runas from "./runas.js";
 import * as selecao from "./selecao.js";
@@ -96,6 +97,7 @@ document.addEventListener("visibilitychange", () => {
 
 painel.iniciar(agir);
 campeoes.iniciar(agir);
+feiticos.iniciar(agir);
 runas.iniciar(pedirLogin);
 
 chamar("/api/estado").then((estado) => {

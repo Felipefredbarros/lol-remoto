@@ -284,3 +284,46 @@ def test_runas_recomendadas_e_aplicar(api, sessao_draft):
     api.lcu.respostas["/lol-perks/v1/pages"] = []
     status, dados = api.json("POST", "/api/runas/aplicar", {"indice": 0}, cookie=token)
     assert status == 409 and "Renomeie" in dados["erro"]
+
+
+# ---------- feitiços (ADR 0010) ----------
+
+
+def test_feiticos_lista_troca_e_estado(api, sessao_draft):
+    api.estado.atualizar(conectado=True, fase=Fase.SELECAO, selecao=selecao_de(sessao_draft))
+    token = api.entrar()
+
+    status, dados = api.json("GET", "/api/feiticos", cookie=token)
+    assert status == 200
+    nomes = [f["nome"] for f in dados["disponiveis"]]
+    assert "Golpear" in nomes and "Clareza" not in nomes  # Summoner's Rift
+
+    status, dados = api.json("POST", "/api/feiticos", {"slot": "f", "feitico": 12}, cookie=token)
+    assert status == 200
+    assert api.lcu.chamadas == [
+        ("PATCH", "/lol-champ-select/v1/session/my-selection", {"spell1Id": 4, "spell2Id": 12})
+    ]
+    eu = next(j for j in dados["selecao"]["aliados"] if j["eu"])
+    assert eu["feiticos"] == {"d": {"id": 4, "nome": "Flash"}, "f": {"id": 14, "nome": "Incendiar"}}
+    assert all(j["feiticos"] is None for j in dados["selecao"]["aliados"] if not j["eu"])
+
+    status, dados = api.json("POST", "/api/feiticos", {"slot": "f", "feitico": 13}, cookie=token)
+    assert status == 400 and dados["codigo"] == "FeiticoIndisponivel"
+
+
+def test_feiticos_exigem_login_e_a_selecao(api, sessao_draft):
+    assert api.json("GET", "/api/feiticos")[0] == 401
+    assert api.json("POST", "/api/feiticos", {"slot": "f", "feitico": 12})[0] == 401
+    token = api.entrar()
+    api.estado.atualizar(conectado=True, fase=Fase.EM_PARTIDA, selecao=selecao_de(sessao_draft))
+    assert api.json("POST", "/api/feiticos", {"slot": "f", "feitico": 12}, cookie=token)[0] == 409
+    assert api.lcu.chamadas == []
+
+
+def test_icone_do_feitico(api):
+    assert api.requisitar("GET", "/api/feiticos/4.png")[0] == 401
+    token = api.entrar()
+    status, cabecalhos, conteudo = api.requisitar("GET", "/api/feiticos/4.png", cookie=token)
+    assert (status, cabecalhos["Content-Type"], conteudo) == (200, "image/png", b"\x89PNG-flash")
+    assert api.requisitar("GET", "/api/feiticos/999.png", cookie=token)[0] == 404
+    assert api.requisitar("GET", "/api/feiticos/14.png", cookie=token)[0] == 404  # sem arquivo

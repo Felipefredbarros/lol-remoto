@@ -19,15 +19,15 @@ function iniciais(nome) {
     .map((parte) => parte.charAt(0)).join("").slice(0, 2).toUpperCase() || "?";
 }
 
-// Ícone do campeão (ou um círculo vazio). Se a imagem não carregar, mostra as iniciais.
-export function icone(campeao, classeExtra) {
+// Ícone do campeão ou do feitiço (ou um círculo vazio). Sem imagem, mostra as iniciais.
+export function icone(campeao, classeExtra, pasta = "/api/campeoes/") {
   const classe = "avatar" + (classeExtra ? " " + classeExtra : "");
   if (!campeao) return criar("span", classe + " vazio");
   const imagem = criar("img", classe);
   imagem.alt = campeao.nome;
   imagem.title = campeao.nome;
   imagem.loading = "lazy";
-  imagem.src = "/api/campeoes/" + campeao.id + ".png";
+  imagem.src = pasta + campeao.id + ".png";
   imagem.addEventListener("error", () => {
     const substituto = criar("span", classe, iniciais(campeao.nome));
     substituto.title = campeao.nome;

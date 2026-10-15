@@ -1,4 +1,4 @@
-// Runas recomendadas pelo cliente: mostra as 3 e aplica a escolhida (com os feitiços).
+// Runas recomendadas pelo cliente: mostra as 3 e aplica a escolhida (só as runas).
 
 import { chamar, ErroApi } from "./api.js";
 import { criar, el, mensagem } from "./util.js";
@@ -45,7 +45,7 @@ function cartao(recomendacao) {
   botao.append(
     criar("strong", null, recomendacao.principal),
     criar("span", null, [recomendacao.descricao, recomendacao.estilos].filter(Boolean).join(" · ")),
-    criar("span", null, "Feitiços: " + recomendacao.feiticos.join(" + ")),
+    criar("span", null, "Feitiços sugeridos: " + recomendacao.feiticos.join(" + ")),
   );
   botao.addEventListener("click", () => aplicar(recomendacao, botao));
   return botao;

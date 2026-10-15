@@ -7,7 +7,7 @@ from lol_remoto.dominio.fase import Fase
 from lol_remoto.plataforma.lcu import FASE, READY_CHECK, SESSAO_SELECAO, ErroLcu
 from lol_remoto.plataforma.lcu_falsa import LcuFalsa
 from lol_remoto.servicos.estado import Estado
-from lol_remoto.servicos.monitor import CATALOGO, Monitor
+from lol_remoto.servicos.monitor import CATALOGO, FEITICOS, Monitor
 
 READY = {"state": "InProgress", "playerResponse": "None", "timer": 1.0}
 
@@ -55,7 +55,14 @@ class _Cenario:
 @pytest.fixture
 def cenario(tmp_path):
     _lockfile(tmp_path)
-    c = _Cenario(tmp_path, {FASE: "Lobby", CATALOGO: [{"id": 103, "name": "Ahri"}]})
+    c = _Cenario(
+        tmp_path,
+        {
+            FASE: "Lobby",
+            CATALOGO: [{"id": 103, "name": "Ahri"}],
+            FEITICOS: [{"id": 4, "name": "Flash", "gameModes": ["CLASSIC"]}],
+        },
+    )
     esperar(lambda: c.estado.atual.conectado)
     yield c
     c.encerrar()
@@ -82,6 +89,7 @@ def test_lockfile_invalido_nao_derruba(tmp_path):
 def test_estado_inicial_e_assinaturas(cenario):
     assert cenario.lcu.assinados == [FASE, SESSAO_SELECAO, READY_CHECK]
     assert cenario.estado.catalogo.nome(103) == "Ahri"
+    assert [f.nome for f in cenario.estado.feiticos] == ["Flash"]
 
 
 def test_fila_ate_a_partida_carregar(cenario, sessao_draft):

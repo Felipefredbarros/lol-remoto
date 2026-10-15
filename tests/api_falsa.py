@@ -6,10 +6,11 @@ import http.client
 import json
 import threading
 
+from conftest import carregar_fixture
 from lol_remoto.api.servidor import criar_servidor
 from lol_remoto.api.sse import CanalSse
 from lol_remoto.api.tipos import Dependencias
-from lol_remoto.api.visao import visao
+from lol_remoto.api.visao import visao_de
 from lol_remoto.dominio.campeoes import Catalogo
 from lol_remoto.dominio.pin import gerar_hash
 from lol_remoto.plataforma.lcu_falsa import LcuFalsa
@@ -17,6 +18,8 @@ from lol_remoto.plataforma.ntfy import NotificadorFalso
 from lol_remoto.servicos.acoes import BANIVEIS, PICKAVEIS, ServicoAcoes
 from lol_remoto.servicos.autenticacao import ServicoAutenticacao
 from lol_remoto.servicos.estado import Estado
+from lol_remoto.servicos.feiticos import LISTA as LISTA_FEITICOS
+from lol_remoto.servicos.feiticos import ServicoFeiticos
 from lol_remoto.servicos.icones import ServicoIcones
 from lol_remoto.servicos.runas import ServicoRunas
 from lol_remoto.servicos.sessoes import ServicoSessoes
@@ -24,6 +27,7 @@ from lol_remoto.servicos.tokens import ServicoTokens
 
 PIN = "12345678"
 TEMPO_LIMITE_TESTE = 1  # segundos (o padrão do servidor é maior)
+ICONE_FLASH = "/lol-game-data/assets/DATA/Spells/Icons2D/Summoner_flash.png"
 
 
 class ApiFalsa:
@@ -32,6 +36,8 @@ class ApiFalsa:
             {PICKAVEIS: [103, 121, 412], BANIVEIS: [103, 121, 157]}
         )
         self.lcu.arquivos["/lol-game-data/assets/v1/champion-icons/103.png"] = b"\x89PNG-ahri"
+        self.lcu.respostas[LISTA_FEITICOS] = carregar_fixture("feiticos.json")
+        self.lcu.arquivos[ICONE_FLASH] = b"\x89PNG-flash"
         self.estado = Estado()
         self.estado.catalogo = Catalogo.de_json(
             [
@@ -43,6 +49,7 @@ class ApiFalsa:
         )
         self.notificador = NotificadorFalso()
         self.tokens = ServicoTokens()
+        self.feiticos = ServicoFeiticos(self.estado, lambda: self.lcu)
         self.deps = Dependencias(
             estado=self.estado,
             acoes=ServicoAcoes(self.estado, lambda: self.lcu),
@@ -51,10 +58,11 @@ class ApiFalsa:
             tokens=self.tokens,
             notificador=self.notificador,
             runas=ServicoRunas(self.estado, lambda: self.lcu),
+            feiticos=self.feiticos,
         )
         self.canal = CanalSse(
             self.estado,
-            lambda: visao(self.estado.atual, self.estado.catalogo, self.estado.agora()),
+            lambda: visao_de(self.estado),
             maximo=maximo_sse,
             heartbeat=heartbeat,
         )
@@ -63,7 +71,7 @@ class ApiFalsa:
             0,
             self.deps,
             self.canal,
-            ServicoIcones(lambda: self.lcu),
+            ServicoIcones(lambda: self.lcu, self.feiticos.caminho_icone),
             tempo_limite=TEMPO_LIMITE_TESTE,
         )
         self.porta = self.servidor.server_address[1]

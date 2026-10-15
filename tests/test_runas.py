@@ -5,7 +5,6 @@ from lol_remoto.dominio.fase import Fase, ForaDeFase
 from lol_remoto.dominio.runas import (
     corpo_pagina,
     eh_pagina_do_app,
-    flash_no_d,
     mapa,
     posicao_lcu,
     recomendacoes_de,
@@ -45,14 +44,6 @@ def test_aram_real_vem_com_flash_no_f_e_o_app_inverte():
     recomendacoes = recomendacoes_de(REAL["soraka_aram"])
     assert REAL["soraka_aram"][0]["summonerSpellIds"] == [13, 4]
     assert all(r.feiticos == (4, 13) for r in recomendacoes)
-
-
-@pytest.mark.parametrize(
-    ("entrada", "saida"),
-    [((4, 14), (4, 14)), ((14, 4), (4, 14)), ((7, 21), (7, 21)), ((), ()), ((4,), (4,))],
-)
-def test_flash_no_d(entrada, saida):
-    assert flash_no_d(entrada) == saida
 
 
 def test_recomendacoes_malformadas_sao_ignoradas():
@@ -104,7 +95,8 @@ def estado(sessao_draft):
     return e
 
 
-def test_aplicar_grava_na_pagina_lol_remoto_e_poe_os_feiticos(estado, lcu):
+def test_aplicar_grava_na_pagina_lol_remoto_e_nao_mexe_nos_feiticos(estado, lcu):
+    """Os feitiços ficam à parte (ADR 0010): a sugestão só aparece na página."""
     escolhida = ServicoRunas(estado, lambda: lcu).aplicar(2)
     assert escolhida.principal == "Toque Ígneo"
     assert lcu.chamadas == [
@@ -119,7 +111,6 @@ def test_aplicar_grava_na_pagina_lol_remoto_e_poe_os_feiticos(estado, lcu):
                 "current": True,
             },
         ),
-        ("PATCH", "/lol-champ-select/v1/session/my-selection", {"spell1Id": 4, "spell2Id": 14}),
     ]
 
 
@@ -142,11 +133,12 @@ def test_sem_espaco_pede_confirmacao_e_nao_mexe_em_nada(estado, lcu):
     assert lcu.chamadas[0][2]["name"] == "Minha página"  # mantém o nome da página dele
 
 
-def test_aram_usa_o_mapa_do_aram_e_inverte_o_flash(lcu, sessao_aram):
+def test_aram_usa_o_mapa_do_aram(lcu, sessao_aram):
     estado = Estado()
     estado.atualizar(conectado=True, fase=Fase.SELECAO, selecao=selecao_de(sessao_aram))
-    ServicoRunas(estado, lambda: lcu).aplicar(0)  # meu campeão no ARAM: 36
-    assert lcu.chamadas[-1][2] == {"spell1Id": 4, "spell2Id": 13}
+    escolhida = ServicoRunas(estado, lambda: lcu).aplicar(0)  # meu campeão no ARAM: 36
+    assert escolhida.feiticos == (4, 13)  # sugestão com o Flash no D
+    assert [c[0] for c in lcu.chamadas] == ["PUT"]
 
 
 @pytest.mark.parametrize("indice", [3, -1, None, True, "0"])
@@ -177,9 +169,9 @@ def test_cliente_fechado(estado):
         ServicoRunas(estado, lambda: None).recomendacoes()
 
 
-def test_nomes_de_estilos_e_feiticos_ficam_em_cache(estado, lcu):
+def test_nomes_dos_estilos_ficam_em_cache(estado, lcu):
     lcu.respostas["/lol-perks/v1/styles"] = [{"id": 8100, "name": "Dominação"}]
     servico = ServicoRunas(estado, lambda: lcu)
-    assert servico.nomes("estilos") == {8100: "Dominação"}
+    assert servico.estilos() == {8100: "Dominação"}
     lcu.respostas["/lol-perks/v1/styles"] = []
-    assert servico.nomes("estilos") == {8100: "Dominação"}
+    assert servico.estilos() == {8100: "Dominação"}
