@@ -21,8 +21,8 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 11 | Interface web do celular | ✅ (usada numa ranqueada) | `0b1ee5b` |
 | 11b | Feitiços separados das runas e página em etapas | ✅ (falta ver no celular e numa fila) | `9a29159` e o seguinte |
 | 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ✅ | `aa7fcd8` |
-| 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ✅ (falta o Felipe rodar como admin) | `3dcf649` |
-| 14 | CI, README, CHANGELOG e versão 0.1.0 | ✅ | (commits `ci`, `docs` e `chore: versão 0.1.0`) |
+| 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ✅ | `d9e65c4` |
+| 14 | CI, README, CHANGELOG e versão 0.1.0 | ✅ | `14160ba` (tag `v0.1.0`) |
 
 ## Detalhes
 
@@ -181,7 +181,7 @@ No celular (Tailscale ligado), abra `http://<IP do Tailscale do PC>:8767` (a sim
 - No fim: endereço para o celular e, se quiser, uma notificação de teste (mostra o tópico do ntfy).
 - `reiniciar.ps1` (sem admin) para pegar o código novo depois de atualizar.
 - `tests/test_scripts.py`: só ASCII, admin onde precisa, os mesmos nomes de tarefa e regra, firewall só do Tailscale. A sintaxe foi conferida com o parser do PowerShell 5.1.
-- **Falta:** o Felipe rodar `instalar.ps1` como administrador e conferir no celular.
+- Instalado no PC do Felipe (15/10/2026) e conferido: tarefa rodando com `pythonw`, firewall 8766/8767 só do Tailscale, app ouvindo em `127.0.0.1` e no IP do Tailscale.
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\instalar.ps1     # como administrador
