@@ -95,9 +95,9 @@ class ServicoAcoes:
         """Ids que o cliente aceita agora para ban ou pick, sem os banidos e os já travados.
 
         O app também tira os usados por conta própria: no `--simular` deu para escolher um
-        banido, e não dá para confiar só na lista do cliente (numa ranqueada a de baníveis
-        veio vazia; roteiro, etapa 8). Sem ela, no ban vale o catálogo, já que dá para banir
-        qualquer campeão; o cliente recusa o que não puder.
+        banido, e não dá para confiar só na lista do cliente. Na ranqueada a lista de baníveis
+        vem como `[-1]` ("qualquer um", visto ao vivo em 15/10/2026; roteiro, etapa 8): sem
+        nenhum campeão conhecido nela, no ban vale o catálogo; o cliente recusa o que não puder.
         """
         atual = self._estado.atual
         exigir_fase(atual.fase, Fase.SELECAO)
@@ -107,11 +107,9 @@ class ServicoAcoes:
         catalogo = self._estado.catalogo
         conhecidos = [i for i in validos if i in catalogo] if len(catalogo) else validos
         if not conhecidos and tipo is TipoAcao.BAN:
-            # Em duas ranqueadas a grade do ban ficou vazia; o trecho mostra o que veio.
-            log.warning(
-                "O cliente não informou campeões baníveis conhecidos (%s); usando o catálogo",
-                repr(ids)[:120],
-            )
+            # Normal na ranqueada ([-1]); o trecho mostra o que veio, caso mude de novo.
+            log.info("Baníveis do cliente sem campeão conhecido (%s): usando o catálogo",
+                     repr(ids)[:120])  # fmt: skip
             conhecidos = [c.id for c in catalogo.buscar()]
         return [i for i in conhecidos if i not in usados]
 

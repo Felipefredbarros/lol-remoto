@@ -14,7 +14,7 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 5 | Cliente LCU (lockfile, HTTPS, eventos) + `--gravar` + anonimizador | ✅ | `e9f8282` |
 | 6 | Notificador ntfy + config | ✅ | `3f307b8` |
 | 7 | Monitor, estado, notificações e modo ausente | ✅ | `531a64b`, ajustes `0e327f4` e `6b28178` |
-| 8 | Ações: ready check, pick/ban, ARAM | ✅ (ban e ARAM a validar ao vivo) | `f409d53` |
+| 8 | Ações: ready check, pick/ban, ARAM | ✅ (validado numa ranqueada; ARAM a validar) | `f409d53` |
 | 9 | Autenticação: PIN, sessões (cookie) e tokens de uso único | ✅ | `ee43194` |
 | 10 | API HTTP + SSE | ✅ | `90a4279`, ajuste `a58ecd5` |
 | 10b | Runas recomendadas e feitiços | ✅ (runas validadas; feitiços a conferir) | `ffe9548` |
@@ -107,9 +107,9 @@ Aceitar/recusar, marcar/confirmar campeão, reroll e troca do banco no ARAM. For
 **Ranqueada solo/duo pelo celular (11/10/2026), gravada em `tests/fixtures/gravacoes/ranqueada_solo.jsonl`:**
 - Funcionou: aceitar pela notificação, intenção no planejamento, confirmar o pick, runas e todos os avisos (iguais aos do teste da gravação).
 - **Bug:** na hora do ban a grade de campeões ficou vazia e o ban passou em branco. A suspeita é que o cliente devolveu `bannable-champion-ids` vazio (ou 404). Agora, sem essa lista, o app oferece o catálogo menos os já banidos (na ranqueada dá para banir qualquer campeão) e registra um aviso no log. A página diz "Nenhum campeão disponível agora" em vez de uma grade vazia, e uma resposta atrasada da lista não sobrescreve mais a da ação atual.
-- **Falta confirmar** numa próxima ranqueada: o ban pelo celular e, no log, se aparece "O cliente não informou os campeões baníveis" (isso confirma a causa).
 - **Ranqueada de 15/10 pelo celular** (gravada em `gravacoes/`): aceitar, intenção, pick, runas e feitiços funcionaram no cliente. Dois problemas:
-  - **O ban continuou com "Nenhum campeão disponível agora"**, sem o aviso de lista vazia no log. Ou seja, o cliente mandou ids que não viraram campeão (ou o pedido falhou). Agora a reserva do catálogo vale também para "nenhum campeão conhecido" e o log registra o trecho do que o cliente mandou ("Grade de ban: N campeões"). A página tenta de novo se a lista vier vazia. **Na próxima ranqueada: ver essas linhas no log.**
+  - **O ban continuou com "Nenhum campeão disponível agora"**, sem o aviso de lista vazia no log. Agora a reserva do catálogo vale também para "nenhum campeão conhecido" e o log registra o que o cliente mandou. A página tenta de novo se a lista vier vazia.
+  - **Causa confirmada na ranqueada seguinte (15/10, 13:23):** na ranqueada, `bannable-champion-ids` vem como **`[-1]`** (parece "qualquer um"). O código antigo achava a lista válida, tirava o -1 e sobrava nada. Com a reserva, a grade teve 173 campeões e o ban pelo celular funcionou. Numa partida anterior do mesmo dia (não ranqueada) a lista veio normal.
   - **Feitiço na página atrasado uma troca:** a resposta do botão (estado montado antes do evento do cliente) chegava depois do SSE e redesenhava o feitiço antigo. A página agora ignora estados com versão menor que a última mostrada.
 - **Banido na grade do pick (15/10, no `--simular`):** a simulação tinha listas fixas e aceitava qualquer campeão. Agora ela age como o cliente (listas sem os usados, recusa banido ou travado). O app também tira da grade, por conta própria, os banidos e os travados por outros (`Selecao.ja_usados`), e recusa com 400 antes de chamar o cliente. **A conferir numa seleção real (só GET):** se `pickable-champion-ids` já vem sem os banidos.
 

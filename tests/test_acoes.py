@@ -169,7 +169,7 @@ def test_disponiveis_ignora_lixo(estado, acoes, lcu):
     assert acoes.disponiveis(TipoAcao.PICK) == [1, 3]
 
 
-@pytest.mark.parametrize("resposta", [[], None, [70001, 70002]])
+@pytest.mark.parametrize("resposta", [[], None, [-1], [70001, 70002]])  # [-1]: ranqueada real
 def test_ban_sem_lista_do_cliente_usa_o_catalogo(resposta, estado, acoes, lcu, sessao_draft):
     """Em duas ranqueadas a grade do ban ficou vazia. Sem lista, ou sem nenhum campeão
     conhecido nela, vale o catálogo."""
