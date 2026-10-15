@@ -36,6 +36,35 @@ log = logging.getLogger("lol_remoto")
 INTERVALO_BUSCA_TAILSCALE = 15  # segundos
 
 
+def esperar_tailscale(
+    descobrir: Callable[[], str | None],
+    servir: Callable[[str], None],
+    parar: threading.Event,
+    intervalo: float = INTERVALO_BUSCA_TAILSCALE,
+) -> str | None:
+    """Tenta até ouvir no IP do Tailscale, que pode subir depois do Windows; devolve o IP.
+
+    Logo depois do logon o IP já aparece, mas ainda não aceita conexões (WinError 10049,
+    visto no desligador em 15/10/2026). Antes o app desistia; agora tenta de novo.
+    """
+    avisou = False
+    while not parar.is_set():
+        ip = descobrir()
+        if ip:
+            try:
+                servir(ip)
+                return ip
+            except OSError as erro:
+                motivo = f"ainda não dá para ouvir em {ip} ({erro})"
+        else:
+            motivo = "Tailscale não encontrado"
+        if not avisou:
+            log.warning("%s; tentando a cada %ss", motivo, intervalo)
+            avisou = True
+        parar.wait(intervalo)
+    return None
+
+
 class App:
     def __init__(
         self,
@@ -91,23 +120,9 @@ class App:
         log.info("Ouvindo em http://%s:%s", host, self._cfg.porta)
 
     def _aguardar_tailscale(self, parar: threading.Event) -> None:
-        """Fica tentando achar o IP do Tailscale (ele pode subir depois do Windows)."""
-        avisou = False
-        while not parar.is_set():
-            ip = descobrir_ip_tailscale()
-            if ip:
-                self._ip_tailscale = ip
-                try:
-                    self.servir(ip)
-                except OSError as erro:
-                    log.error("Não foi possível ouvir em %s:%s: %s", ip, self._cfg.porta, erro)
-                return
-            if not avisou:
-                log.warning(
-                    "Tailscale não encontrado; tentando a cada %ss", INTERVALO_BUSCA_TAILSCALE
-                )
-                avisou = True
-            parar.wait(INTERVALO_BUSCA_TAILSCALE)
+        ip = esperar_tailscale(descobrir_ip_tailscale, self.servir, parar)
+        if ip:
+            self._ip_tailscale = ip
 
     def executar(self, parar: threading.Event) -> int:
         """Roda até `parar` ser acionado. Retorna o código de saída."""

@@ -5,6 +5,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+### Corrigido
+- Logo depois do logon, se o IP do Tailscale já aparecia mas ainda não aceitava conexões, o app desistia de ouvir nele e o celular não alcançava o PC. Agora ele tenta de novo a cada 15 s.
+
 ## [0.1.0] - 2026-10-15
 
 ### Adicionado
