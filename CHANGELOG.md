@@ -5,6 +5,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+## [0.1.0] - 2026-10-15
+
 ### Adicionado
 - Estrutura inicial do projeto, CLAUDE.md, documento de arquitetura e ADRs.
 - Regras do domínio: fases do cliente (com a trava "nada dentro da partida"), leitura da sessão da seleção de campeões, avisos por transição e busca de campeões sem acento.
@@ -46,3 +48,6 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Grade do ban vazia de novo numa ranqueada (15/10): se a lista do cliente não tiver nenhum campeão conhecido, vale o catálogo, e o log registra o que veio. A página tenta carregar a lista de novo se ela vier vazia.
 - A grade de campeões não oferece mais campeão banido nem já escolhido, mesmo que a lista do cliente traga. No `--simular` dava para escolher um banido.
 - Grade de campeões vazia na hora do ban numa ranqueada: sem a lista de baníveis do cliente, o app oferece todos os campeões, menos os já banidos. A página avisa quando não há campeão para mostrar.
+
+[Não lançado]: https://github.com/Felipefredbarros/lol-remoto/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Felipefredbarros/lol-remoto/releases/tag/v0.1.0

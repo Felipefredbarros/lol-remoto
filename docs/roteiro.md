@@ -21,8 +21,8 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 11 | Interface web do celular | ✅ (usada numa ranqueada) | `0b1ee5b` |
 | 11b | Feitiços separados das runas e página em etapas | ✅ (falta ver no celular e numa fila) | `9a29159` e o seguinte |
 | 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ✅ | `aa7fcd8` |
-| 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ✅ (falta o Felipe rodar como admin) | (próximo commit `feat`) |
-| 14 | CI, README, CHANGELOG e versão 0.1.0 | ⏳ | |
+| 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ✅ (falta o Felipe rodar como admin) | `3dcf649` |
+| 14 | CI, README, CHANGELOG e versão 0.1.0 | ✅ | (commits `ci`, `docs` e `chore: versão 0.1.0`) |
 
 ## Detalhes
 
@@ -187,8 +187,12 @@ No celular (Tailscale ligado), abra `http://<IP do Tailscale do PC>:8767` (a sim
 powershell -ExecutionPolicy Bypass -File scripts\instalar.ps1     # como administrador
 ```
 
-### 14. Publicação
-CI no GitHub Actions, README completo, CHANGELOG e `chore: versão 0.1.0`. Criar o repositório público `lol-remoto` e fazer push **só depois de confirmar com o Felipe**.
+### 14. Publicação ✅
+- CI no GitHub Actions (Windows, Python 3.11 e 3.14: ruff e pytest), copiado do desligador.
+- README completo: instalação, uso, segurança, solução de problemas, limitações e o aviso legal da Riot.
+- CHANGELOG fechado em `[0.1.0] - 2026-10-15` e tag `v0.1.0`.
+- Antes de publicar, o histórico inteiro foi conferido: sem PIN, tópico, tokens do cliente, nick, `puuid`/`summonerId` ou IP do Tailscale. Os tópicos e senhas que aparecem são valores falsos dos testes. O nome do PC num teste virou "meu-pc" (decidido com o Felipe; o histórico não foi reescrito).
+- Repositório público `Felipefredbarros/lol-remoto`, criado com a confirmação do Felipe.
 
 ## Depois da v0.1.0 (ideias)
 - Swiftplay e Arena.
