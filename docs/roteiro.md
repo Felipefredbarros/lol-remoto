@@ -21,7 +21,7 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 11 | Interface web do celular | ✅ (usada numa ranqueada) | `0b1ee5b` |
 | 11b | Feitiços separados das runas e página em etapas | ✅ (falta ver no celular e numa fila) | `9a29159` e o seguinte |
 | 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ✅ | `aa7fcd8` |
-| 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ⏳ | |
+| 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ✅ (falta o Felipe rodar como admin) | (próximo commit `feat`) |
 | 14 | CI, README, CHANGELOG e versão 0.1.0 | ⏳ | |
 
 ## Detalhes
@@ -171,15 +171,25 @@ Pedido do Felipe depois da ranqueada de 11/10: trocar os feitiços sem mexer nas
 cd C:\Users\felip\Documents\lol-remoto\src
 py -m lol_remoto --simular
 ```
-No celular (Tailscale ligado), abra `http://<IP do Tailscale do PC>:8766` (aparece no log como "Ouvindo em ...") e entre com o PIN. Ligue o modo ausente para receber as notificações com os botões. Para parar: `Ctrl+C`.
+No celular (Tailscale ligado), abra `http://<IP do Tailscale do PC>:8767` (a simulação usa a porta + 1 desde a etapa 13; aparece no log como "Ouvindo em ...") e entre com o PIN. Ligue o modo ausente para receber as notificações com os botões. Para parar: `Ctrl+C`.
 
-### 13. Instalação
-`instalar.ps1`/`desinstalar.ps1`: tarefa "LoL Remoto", firewall 8766 só para `100.64.0.0/10`, PIN, tópico do ntfy e o endereço para o celular.
+### 13. Instalação ✅
+`scripts/instalar.ps1`, `desinstalar.ps1` e `reiniciar.ps1`, adaptados do desligador. Ver [ADR 0011](decisoes/0011-instalacao-como-tarefa-no-logon.md).
+- Tarefa "LoL Remoto" no logon, com `pythonw` (sem janela), sem privilégio e reiniciando sozinha se cair.
+- Firewall "LoL Remoto (Tailscale)": 8766 e 8767 (o `--simular`, decidido com o Felipe) só para `100.64.0.0/10`.
+- Sem config, o instalador pede o PIN antes de registrar a tarefa (o app sem janela não teria onde mostrar o PIN gerado). O config existente é mantido.
+- No fim: endereço para o celular e, se quiser, uma notificação de teste (mostra o tópico do ntfy).
+- `reiniciar.ps1` (sem admin) para pegar o código novo depois de atualizar.
+- `tests/test_scripts.py`: só ASCII, admin onde precisa, os mesmos nomes de tarefa e regra, firewall só do Tailscale. A sintaxe foi conferida com o parser do PowerShell 5.1.
+- **Falta:** o Felipe rodar `instalar.ps1` como administrador e conferir no celular.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\instalar.ps1     # como administrador
+```
 
 ### 14. Publicação
 CI no GitHub Actions, README completo, CHANGELOG e `chore: versão 0.1.0`. Criar o repositório público `lol-remoto` e fazer push **só depois de confirmar com o Felipe**.
 
 ## Depois da v0.1.0 (ideias)
 - Swiftplay e Arena.
-- Runas e feitiços pelo celular.
 - Favoritos/posição preferida na lista de campeões.

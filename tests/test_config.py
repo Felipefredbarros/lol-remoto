@@ -102,3 +102,12 @@ def test_trocar_pin_sem_config_cria_um(tmp_path):
     cfg = trocar_pin(tmp_path / "config.json", "87654321")
     assert conferir("87654321", cfg.pin_hash)
     assert cfg.ntfy_topico.startswith("lolremoto-")
+
+
+def test_simulacao_usa_a_porta_seguinte():
+    """O --simular convive com o app instalado (ADR 0011): 8766 → 8767."""
+    cfg = Config(pin_hash="x", ntfy_topico="t" * 16)
+    assert config.para_simulacao(cfg).porta == cfg.porta + 1
+    assert config.para_simulacao(cfg).ntfy_topico == cfg.ntfy_topico
+    with pytest.raises(ConfigInvalida):
+        config.para_simulacao(Config(pin_hash="x", ntfy_topico="t" * 16, porta=65535))

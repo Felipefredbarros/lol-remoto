@@ -116,6 +116,11 @@ def carregar_ou_criar(caminho: Path) -> tuple[Config, str | None]:
     return config, pin
 
 
+def para_simulacao(config: Config) -> Config:
+    """O `--simular` usa a porta seguinte, para rodar junto com o app instalado (ADR 0011)."""
+    return replace(config, porta=_validar_porta(config.porta + 1))
+
+
 def trocar_pin(caminho: Path, novo_pin: str) -> Config:
     """Grava o hash de `novo_pin`, mantendo o resto. Cria o arquivo se não existir."""
     novo_hash = gerar_hash(validar_pin(novo_pin))

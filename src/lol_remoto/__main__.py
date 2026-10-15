@@ -97,6 +97,7 @@ def _executar_app(args: argparse.Namespace) -> int:
     extras = {}
     if args.simular:
         log.warning("Modo simulação: o cliente do LoL é falso (o real não é tocado)")
+        cfg = config.para_simulacao(cfg)  # porta + 1: convive com o app instalado
         # As fotos vêm do cliente de verdade, se estiver aberto (só imagens, só GET).
         simulada = LcuSimulada(ativos=AtivosDoClienteReal(args.pasta_lol or Path(cfg.pasta_lol)))
         extras = {

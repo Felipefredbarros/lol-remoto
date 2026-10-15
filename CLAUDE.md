@@ -67,13 +67,17 @@ py -m venv .venv
 .venv\Scripts\python -m pytest            # testes
 .venv\Scripts\ruff check . ; .venv\Scripts\ruff format .   # lint + formatação
 
-cd src; py -m lol_remoto --simular        # cliente LoL simulado com bots (http://localhost:8766)
+cd src; py -m lol_remoto --simular        # cliente LoL simulado com bots (http://localhost:8767: porta + 1)
 cd src; py -m lol_remoto --simular --config $env:TEMP\teste.json   # sem mexer no config real
 cd src; py -m lol_remoto --trocar-pin     # define um novo PIN
 cd src; py -m lol_remoto --testar-notificacao   # manda uma notificação de teste ao celular
 cd src; py -m lol_remoto --ausente   # app de verdade, já com o modo ausente ligado
 cd src; py -m lol_remoto --gravar ..\gravacoes  # grava eventos reais da LCU (para fixtures)
 cd src; py -m lol_remoto --anonimizar ..\gravacoes\x.jsonl ..\tests\fixtures\gravacoes\x.jsonl
+
+powershell -ExecutionPolicy Bypass -File scripts\instalar.ps1    # como admin: tarefa no logon + firewall
+powershell -ExecutionPolicy Bypass -File scripts\reiniciar.ps1   # depois de atualizar o código
+powershell -ExecutionPolicy Bypass -File scripts\desinstalar.ps1 # como admin
 ```
 
 ## Regras
