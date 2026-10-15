@@ -206,10 +206,11 @@ def test_lista_de_campeoes_para_pick_e_ban(api, sessao_draft):
     token = api.entrar()
     api.estado.atualizar(conectado=True, fase=Fase.SELECAO, selecao=selecao_de(sessao_draft))
     _, dados = api.json("GET", "/api/campeoes?tipo=ban", cookie=token)
-    assert [c["nome"] for c in dados["campeoes"]] == ["Ahri", "Kha'Zix", "Yasuo"]
+    # Na fixture a Ahri já foi travada pelo inimigo e o Yasuo, banido: somem das duas listas.
+    assert [c["nome"] for c in dados["campeoes"]] == ["Kha'Zix"]
     _, dados = api.json("GET", "/api/campeoes", cookie=token)
     assert dados["tipo"] == "pick"
-    assert [c["nome"] for c in dados["campeoes"]] == ["Ahri", "Kha'Zix", "Thresh"]
+    assert [c["nome"] for c in dados["campeoes"]] == ["Kha'Zix", "Thresh"]
 
 
 def test_marcar_e_confirmar(api, sessao_draft):

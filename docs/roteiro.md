@@ -108,6 +108,7 @@ Aceitar/recusar, marcar/confirmar campeão, reroll e troca do banco no ARAM. For
 - Funcionou: aceitar pela notificação, intenção no planejamento, confirmar o pick, runas e todos os avisos (iguais aos do teste da gravação).
 - **Bug:** na hora do ban a grade de campeões ficou vazia e o ban passou em branco. A suspeita é que o cliente devolveu `bannable-champion-ids` vazio (ou 404). Agora, sem essa lista, o app oferece o catálogo menos os já banidos (na ranqueada dá para banir qualquer campeão) e registra um aviso no log. A página diz "Nenhum campeão disponível agora" em vez de uma grade vazia, e uma resposta atrasada da lista não sobrescreve mais a da ação atual.
 - **Falta confirmar** numa próxima ranqueada: o ban pelo celular e, no log, se aparece "O cliente não informou os campeões baníveis" (isso confirma a causa).
+- **Banido na grade do pick (15/10, no `--simular`):** a simulação tinha listas fixas e aceitava qualquer campeão. Agora ela age como o cliente (listas sem os usados, recusa banido ou travado). O app também tira da grade, por conta própria, os banidos e os travados por outros (`Selecao.ja_usados`), e recusa com 400 antes de chamar o cliente. **A conferir numa seleção real (só GET):** se `pickable-champion-ids` já vem sem os banidos.
 
 ### 9. Autenticação ✅
 PIN + bloqueio por IP, sessões com cookie (só o SHA-256 salvo) e tokens de uso único para os botões da notificação.

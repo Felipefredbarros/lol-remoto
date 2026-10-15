@@ -138,3 +138,26 @@ def test_sem_aceitar_sai_da_fila(criar):
     p = criar(aceitar=False)
     p.esperar(lambda: "Você saiu da fila" in p.titulos())
     assert p.titulos()[:2] == ["Partida encontrada!", "Você saiu da fila"]
+
+
+def test_simulacao_nao_deixa_escolher_banido_nem_travado():
+    """Como o cliente real: no --simular deu para escolher um campeão banido."""
+    from lol_remoto.plataforma import simulacao as sim
+    from lol_remoto.plataforma.lcu import ErroLcu
+
+    lcu = LcuSimulada()
+    pickaveis = "/lol-champ-select/v1/pickable-champion-ids"
+    assert lcu.get(pickaveis) == list(sim.CAMPEOES)  # fora da seleção: todos
+    lcu.selecao._sessao = sessao = sim.sessao_inicial()
+    acoes = {a["id"]: a for a in sim.acoes(sessao)}
+    acoes[1].update(championId=157, completed=True)  # ban do aliado
+    acoes[11].update(championId=103, completed=True)  # 1º pick
+    acoes[15]["isInProgress"] = True  # o meu pick
+
+    lista = lcu.get(pickaveis)
+    assert 157 not in lista and 103 not in lista and 412 in lista
+    for campeao in (157, 103):
+        with pytest.raises(ErroLcu):
+            lcu.enviar("PATCH", "/lol-champ-select/v1/session/actions/15", {"championId": campeao})
+    lcu.enviar("PATCH", "/lol-champ-select/v1/session/actions/15", {"championId": 412})
+    assert acoes[15]["championId"] == 412

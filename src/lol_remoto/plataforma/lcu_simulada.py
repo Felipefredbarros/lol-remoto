@@ -22,6 +22,10 @@ from lol_remoto.plataforma.simulacao_selecao import SelecaoSimulada
 log = logging.getLogger(__name__)
 
 _ACAO = re.compile(r"^/lol-champ-select/v1/session/actions/(\d+)$")
+_LISTAS_DA_SELECAO = (
+    "/lol-champ-select/v1/pickable-champion-ids",
+    "/lol-champ-select/v1/bannable-champion-ids",
+)
 
 
 def _respostas_fixas() -> dict[str, Any]:
@@ -31,8 +35,6 @@ def _respostas_fixas() -> dict[str, Any]:
         "/lol-game-data/assets/v1/champion-summary.json": [
             {"id": i, "name": n} for i, n in sim.CAMPEOES.items()
         ],
-        "/lol-champ-select/v1/pickable-champion-ids": ids,
-        "/lol-champ-select/v1/bannable-champion-ids": ids,
         "/lol-perks/v1/pages": [{"id": 1, "name": "LoL Remoto", "isEditable": True}],
         "/lol-perks/v1/styles": [{"id": i, "name": n} for i, n in sim.ESTILOS.items()],
         "/lol-game-data/assets/v1/summoner-spells.json": sim.feiticos(),
@@ -82,6 +84,11 @@ class LcuSimulada(LcuFalsa):
             self.selecao.feiticos(corpo or {})
         self._acordar.set()
         return None
+
+    def get(self, caminho: str) -> Any:
+        if caminho in _LISTAS_DA_SELECAO:  # mudam com os bans e picks, como no cliente real
+            return self.selecao.disponiveis()
+        return super().get(caminho)
 
     def get_bytes(self, caminho: str) -> bytes:
         if caminho in self.arquivos or self._ativos is None:

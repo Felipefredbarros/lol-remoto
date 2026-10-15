@@ -38,6 +38,20 @@ class SelecaoSimulada:
 
     # ---------- o que vem da página ----------
 
+    def _usados(self, exceto_celula: int | None = None) -> set[int]:
+        """Banidos e travados (como o cliente real, que não deixa repetir no draft)."""
+        return {
+            a["championId"]
+            for a in sim.acoes(self._sessao or {"actions": []})
+            if a["completed"] and a["championId"] > 0 and a["actorCellId"] != exceto_celula
+        }
+
+    def disponiveis(self) -> list[int]:
+        """O que a LCU responderia em pickable/bannable-champion-ids agora."""
+        with self._trava:
+            usados = self._usados(exceto_celula=sim.MINHA_CELULA)
+            return [c for c in sim.CAMPEOES if c not in usados]
+
     def minha_acao(self, id_: int, corpo: dict[str, Any]) -> None:
         with self._trava:
             sessao = self._sessao or {"actions": []}
@@ -45,6 +59,8 @@ class SelecaoSimulada:
             if acao is None or acao["actorCellId"] != sim.MINHA_CELULA or acao["completed"]:
                 raise ErroLcu("Ação inválida na simulação.", 400)
             campeao = corpo.get("championId", acao["championId"])
+            if campeao in self._usados(exceto_celula=sim.MINHA_CELULA):
+                raise ErroLcu("Campeão banido ou já escolhido (simulação).", 400)
             acao["championId"] = campeao
             eu = sim.jogador(self._sessao, sim.MINHA_CELULA)
             if self._sessao["timer"]["phase"] == "PLANNING":
@@ -79,7 +95,7 @@ class SelecaoSimulada:
 
     def _concluir(self, acao: dict[str, Any], sortear: bool = True) -> None:
         if acao["championId"] == 0 and sortear:
-            usados = {a["championId"] for a in sim.acoes(self._sessao)}
+            usados = self._usados() | {a["championId"] for a in sim.acoes(self._sessao)}
             acao["championId"] = self._sorteio.choice([c for c in sim.CAMPEOES if c not in usados])
         acao.update(completed=True, isInProgress=False)
         if acao["type"] == "pick":

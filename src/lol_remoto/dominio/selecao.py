@@ -124,6 +124,16 @@ class Selecao:
             and a.campeao != SEM_CAMPEAO
         )
 
+    def ja_usados(self) -> frozenset[int]:
+        """Campeões fora do jogo para mim: banidos (dos dois times) ou travados por outros."""
+        return frozenset(
+            a.campeao
+            for a in self.acoes
+            if a.concluida
+            and a.campeao > SEM_CAMPEAO  # -1 = ban em branco
+            and (a.tipo is TipoAcao.BAN or a.celula != self.minha_celula)
+        )
+
     def confirmou(self, celula: int) -> bool:
         """True se o jogador já travou o campeão."""
         return any(

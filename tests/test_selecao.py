@@ -88,3 +88,11 @@ def test_etapa_desconhecida_e_campos_estranhos(sessao_draft):
 def test_formato_invalido(dados):
     with pytest.raises(SelecaoInvalida):
         selecao_de(dados)
+
+
+def test_ja_usados_banidos_e_travados_por_outros(sessao_draft):
+    selecao = selecao_de(sessao_draft)
+    # Bans concluídos (sem os pulados) e picks travados de outros: 86, 64 e 103.
+    assert selecao.ja_usados() == {157, 238, 555, 84, 11, 17, 30, 99, 86, 64, 103}
+    sessao_draft["actions"][4][1].update(championId=412, completed=True)  # o meu pick
+    assert 412 not in selecao_de(sessao_draft).ja_usados()

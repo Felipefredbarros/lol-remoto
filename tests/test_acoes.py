@@ -88,9 +88,9 @@ def test_erro_da_lcu_e_repassado(estado, acoes, lcu):
 
 def test_marcar_na_minha_vez(estado, acoes, lcu, sessao_draft):
     _na_selecao(estado, sessao_draft)  # minha vez: pick 15
-    acoes.marcar(103)
+    acoes.marcar(412)
     assert lcu.chamadas == [
-        ("PATCH", "/lol-champ-select/v1/session/actions/15", {"championId": 103})
+        ("PATCH", "/lol-champ-select/v1/session/actions/15", {"championId": 412})
     ]
 
 
@@ -131,9 +131,11 @@ def test_ban_usa_a_lista_de_baniveis(estado, acoes, lcu, sessao_draft):
     _na_selecao(estado, sessao_draft)
     with pytest.raises(CampeaoIndisponivel):
         acoes.marcar(412)  # pickável, mas não banível
-    acoes.confirmar(157)
+    with pytest.raises(CampeaoIndisponivel):
+        acoes.marcar(157)  # banível, mas já banido por um aliado
+    acoes.confirmar(1)
     assert lcu.chamadas == [
-        ("PATCH", "/lol-champ-select/v1/session/actions/3", {"championId": 157, "completed": True})
+        ("PATCH", "/lol-champ-select/v1/session/actions/3", {"championId": 1, "completed": True})
     ]
 
 
@@ -149,12 +151,10 @@ def test_nao_e_minha_vez(estado, acoes, sessao_draft):
 def test_planejamento_declara_intencao_no_meu_pick(estado, acoes, lcu, sessao_draft):
     sessao_draft["timer"]["phase"] = "PLANNING"
     _na_selecao(estado, sessao_draft)
-    acoes.marcar(103)
-    assert lcu.chamadas == [
-        ("PATCH", "/lol-champ-select/v1/session/actions/15", {"championId": 103})
-    ]
+    acoes.marcar(1)
+    assert lcu.chamadas == [("PATCH", "/lol-champ-select/v1/session/actions/15", {"championId": 1})]
     with pytest.raises(AcaoIndisponivel, match="planejamento"):
-        acoes.confirmar(103)
+        acoes.confirmar(1)
 
 
 def test_selecao_ainda_carregando(estado, acoes):
@@ -178,11 +178,11 @@ def test_ban_sem_lista_do_cliente_usa_o_catalogo(resposta, estado, acoes, lcu, s
     sessao_draft["actions"][0][2].update(isInProgress=True, completed=False)  # meu ban (id 3)
     _na_selecao(estado, sessao_draft)
     estado.catalogo = Catalogo(
-        [Campeao(1, "Annie"), Campeao(103, "Ahri"), Campeao(157, "Yasuo"), Campeao(60103, "Ahri")]
+        [Campeao(1, "Annie"), Campeao(22, "Ashe"), Campeao(157, "Yasuo"), Campeao(60022, "Ashe")]
     )
     lcu.respostas[BANIVEIS] = resposta
 
-    assert acoes.disponiveis(TipoAcao.BAN) == [103, 1]  # sem o Yasuo (banido) e a variante
+    assert acoes.disponiveis(TipoAcao.BAN) == [1, 22]  # sem o Yasuo (banido) e a variante
     with pytest.raises(CampeaoIndisponivel):
         acoes.marcar(157)
     acoes.confirmar(1)
@@ -191,6 +191,20 @@ def test_ban_sem_lista_do_cliente_usa_o_catalogo(resposta, estado, acoes, lcu, s
         "/lol-champ-select/v1/session/actions/3",
         {"championId": 1, "completed": True},
     )
+
+
+def test_banidos_e_travados_saem_da_grade_mesmo_se_o_cliente_mandar(
+    estado, acoes, lcu, sessao_draft
+):
+    """No --simular deu para escolher um banido: o app não confia só na lista do cliente."""
+    _na_selecao(estado, sessao_draft)  # minha vez: pick 15
+    # 157 banido; 103 travado pelo inimigo; 121 só marcado por um aliado (ainda livre).
+    lcu.respostas[PICKAVEIS] = [1, 103, 121, 157, 412]
+    assert acoes.disponiveis(TipoAcao.PICK) == [1, 121, 412]
+    for campeao in (157, 103):
+        with pytest.raises(CampeaoIndisponivel):
+            acoes.confirmar(campeao)
+    assert lcu.chamadas == []
 
 
 def test_pick_sem_lista_do_cliente_continua_vazio(estado, acoes, lcu):
