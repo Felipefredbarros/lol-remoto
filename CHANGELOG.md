@@ -26,8 +26,11 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Opção `--simular`: cliente do LoL simulado com bots (fila, partida encontrada, seleção, dodge) para testar o celular sem abrir o jogo.
 - Feitiços pelo celular, separados das runas: botões D e F com a grade dos feitiços do modo. Escolher o feitiço da outra tecla troca os dois de lugar.
 
+- Página em etapas: barra com fila → partida → intenção → ban → pick → runas → carregando, a etapa atual em destaque, o histórico do que já foi feito ("Ban: Yasuo") e a ordem dos picks dos dois times.
+
 ### Alterado
 - Aplicar runas não muda mais os feitiços; a página só mostra os feitiços sugeridos.
+- Runas e feitiços aparecem na etapa depois do seu pick (no ARAM, logo no começo). Os times só aparecem quando não há ordem de picks (ARAM).
 
 ### Corrigido
 - "Sua vez de banir" saía no início do planejamento, e não quando os bans começavam.

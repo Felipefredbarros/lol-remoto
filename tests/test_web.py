@@ -65,11 +65,17 @@ def test_visao_tem_os_campos_que_a_pagina_usa(sessao_draft):
         ready_check=ReadyCheck(True, Resposta.NENHUMA, 1.0),
     )
     dados = visao(estado.atual, estado.catalogo, estado.agora())
-    assert {"versao", "fase", "fase_descricao", "ausente", "ready_check", "selecao"} <= set(dados)
+    topo = {"versao", "fase", "fase_descricao", "ausente", "ready_check", "selecao", "passos"}
+    assert topo <= set(dados)
+    assert {"id", "nome", "estado", "resumo"} <= set(dados["passos"][0])  # etapas.js
     assert {"resposta", "segundos_restantes"} <= set(dados["ready_check"])
     selecao = dados["selecao"]
     esperados = {"aram", "etapa", "planejamento", "segundos_restantes", "minha_vez", "bans"}
-    assert esperados | {"aliados", "inimigos"} <= set(selecao)
+    assert esperados | {"aliados", "inimigos", "ordem_picks"} <= set(selecao)
+    pick = selecao["ordem_picks"][0]  # ordem.js
+    assert {"ordem", "aliado", "eu", "nome", "posicao", "campeao", "intencao", "estado"} <= set(
+        pick
+    )
     assert {"aliados", "inimigos"} == set(selecao["bans"])
     campos = {"eu", "nome", "posicao", "campeao", "intencao", "confirmado", "agindo", "feiticos"}
     assert campos <= set(selecao["aliados"][0])

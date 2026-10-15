@@ -80,7 +80,7 @@ O token não dá acesso a mais nada: não abre sessão nem serve para pick/ban. 
    - bans;
    - ação em andamento (quem e o quê);
    - timer: fase + segundos restantes, calculados no recebimento a partir de `adjustedTimeLeftInPhase`.
-2. A página recebe o novo estado pelo SSE (`/api/eventos`) e redesenha.
+2. A página recebe o novo estado pelo SSE (`/api/eventos`) e redesenha. O estado já traz as **etapas** da partida (`passos`, montados em `api/passos.py`: fila → partida → intenção → ban → pick → runas → carregando, cada uma feita, atual ou pendente, com um resumo) e a **ordem dos picks** dos dois times (`selecao.ordem_picks`). A página mostra a barra de etapas, a etapa atual em destaque, o histórico do que já foi feito e a ordem dos picks.
 3. Se a ação em andamento é sua (`actorCellId == localPlayerCellId`), `avisos.py` gera `SUA_VEZ_BANIR` ou `SUA_VEZ_ESCOLHER`, uma vez por ação.
 4. Na página você busca o campeão (lista de `pickable`/`bannable-champion-ids`) e toca **Marcar**: `PATCH /lol-champ-select/v1/session/actions/{id}` com `{"championId": N}`. O time vê o seu hover.
 5. **Confirmar** chama `POST /lol-champ-select/v1/session/actions/{id}/complete`.

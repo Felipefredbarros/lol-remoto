@@ -2,6 +2,7 @@
 
 import { chamar, ErroApi, ouvir } from "./api.js";
 import * as campeoes from "./campeoes.js";
+import * as etapas from "./etapas.js";
 import * as feiticos from "./feiticos.js";
 import * as painel from "./painel.js";
 import * as runas from "./runas.js";
@@ -12,6 +13,7 @@ let fonte = null;
 let religar = null;
 
 function desenhar(estado) {
+  etapas.desenhar(estado);
   painel.desenhar(estado);
   selecao.desenhar(estado);
 }

@@ -1,4 +1,5 @@
 // Parte de cima da página: fase do cliente, partida encontrada e modo ausente.
+// O cartão da fase some quando a etapa atual tem cartão próprio (partida, seleção).
 
 import { contar, el } from "./util.js";
 
@@ -36,6 +37,7 @@ export function desenhar(novo) {
   const partida = novo.ready_check;
   const visivel = Boolean(partida) && novo.fase === "ReadyCheck";
   el("partida").hidden = !visivel;
+  el("cartao-status").hidden = visivel || (Boolean(novo.selecao) && novo.fase === "ChampSelect");
   if (!visivel) {
     contar(el("partida-contagem"), null);
     return;

@@ -21,7 +21,8 @@ Projeto irmão do [desligador](https://github.com/Felipefredbarros/desligador), 
 | api | `api/rotas_painel.py` | Login, estado, modo ausente, lista de campeões, teste de notificação |
 | api | `api/rotas_cliente.py` | Rotas que agem no cliente: aceitar/recusar, marcar/confirmar, ARAM |
 | api | `api/tipos.py` | `Pedido`, `Resposta`, `Dependencias`, erros comuns, exigência de sessão |
-| api | `api/visao.py` | Estado → JSON da página (nomes, posições, tempos restantes) |
+| api | `api/visao.py` | Estado → JSON da página (nomes, posições, tempos, ordem dos picks) |
+| api | `api/passos.py` | Etapas da página sequencial (fila → partida → ... → carregando) |
 | api | `api/servidor.py` | Transporte HTTP (stdlib), estáticos, cookie de sessão, timeout, cabeçalhos |
 | api | `api/sse.py` | Stream `text/event-stream` do estado (`/api/eventos`) |
 | api | `api/protecao.py` | Validação de `Host`/`Origin` (CSRF e DNS rebinding) |

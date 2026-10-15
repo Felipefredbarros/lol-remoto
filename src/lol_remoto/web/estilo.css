@@ -248,6 +248,47 @@ input:focus-visible, button:focus-visible {
 .runa span { font-size: 0.9rem; color: var(--texto-suave); }
 .runa[aria-pressed="true"] { border-color: var(--destaque); }
 
+/* Barra de etapas: ✓ feito, ● atual, ○ pendente */
+.etapas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.etapa {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--texto-suave);
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+}
+.etapa.feito { color: var(--sucesso); border-color: var(--sucesso); }
+.etapa.atual { color: #111827; background: var(--destaque); border-color: var(--destaque); }
+.etapa .marca { font-size: 0.75rem; }
+
+.historico { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.historico li { display: flex; gap: 8px; }
+.historico .marca { color: var(--sucesso); font-weight: 700; }
+
+/* Ordem dos picks: a cor da borda diz o time */
+.ordem li.aliado { border-left-color: var(--primaria); }
+.ordem li.inimigo { border-left-color: var(--perigo); }
+.ordem li.agindo { background: var(--fundo); box-shadow: inset 0 0 0 2px var(--destaque); }
+.ordem .numero {
+  flex: 0 0 auto;
+  width: 1.4em;
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--texto-suave);
+}
+
 .mensagem { min-height: 1.4em; margin: 0; text-align: center; }
 .mensagem[data-tipo="erro"] { color: var(--perigo); }
 .mensagem[data-tipo="sucesso"] { color: var(--sucesso); }

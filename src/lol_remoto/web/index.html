@@ -28,10 +28,14 @@
     </section>
 
     <div id="tela-app" class="pilha" hidden>
-      <section class="cartao" aria-live="polite">
+      <p class="dica" id="conexao" hidden></p>
+
+      <!-- Etapas da partida: fila → partida → intenção → ban → pick → runas → carregando -->
+      <ol id="etapas" class="etapas" aria-label="Etapas da partida" hidden></ol>
+
+      <section id="cartao-status" class="cartao" aria-live="polite">
         <p class="rotulo">Cliente do LoL</p>
         <p class="status-texto" id="fase">Carregando…</p>
-        <p class="dica" id="conexao" hidden></p>
       </section>
 
       <section id="partida" class="cartao destaque" hidden>
@@ -45,6 +49,7 @@
       </section>
 
       <div id="selecao" class="pilha" hidden>
+        <!-- Etapa atual -->
         <section class="cartao destaque">
           <div class="linha">
             <p class="rotulo" id="etapa"></p>
@@ -78,13 +83,25 @@
           <div id="lista-runas" class="pilha"></div>
         </section>
 
+        <!-- O que já foi feito -->
+        <section id="cartao-historico" class="cartao" hidden>
+          <p class="rotulo">Até agora</p>
+          <ul id="historico" class="historico"></ul>
+        </section>
+
+        <section id="cartao-ordem" class="cartao" hidden>
+          <p class="rotulo">Ordem dos picks</p>
+          <ol id="ordem-picks" class="time ordem"></ol>
+        </section>
+
         <section id="cartao-bans" class="cartao">
           <p class="rotulo">Bans</p>
           <div class="bans" id="bans-aliados" aria-label="Bans do seu time"></div>
           <div class="bans" id="bans-inimigos" aria-label="Bans do time inimigo"></div>
         </section>
 
-        <section class="cartao">
+        <!-- Sem ordem de picks (ARAM): os times -->
+        <section id="cartao-aliados" class="cartao">
           <p class="rotulo">Seu time</p>
           <ul id="aliados" class="time"></ul>
         </section>

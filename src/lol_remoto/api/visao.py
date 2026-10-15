@@ -5,10 +5,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from lol_remoto.api.passos import passos
 from lol_remoto.dominio.campeoes import SEM_CAMPEAO, Catalogo
 from lol_remoto.dominio.fase import DESCRICOES, pode_agir
 from lol_remoto.dominio.ready_check import DURACAO_SEGUNDOS
-from lol_remoto.dominio.selecao import POSICOES, Jogador, Selecao
+from lol_remoto.dominio.selecao import POSICOES, Jogador, Selecao, TipoAcao
 from lol_remoto.servicos.estado import Estado, Retrato
 
 
@@ -43,6 +44,34 @@ def _jogador(
     }
 
 
+def _ordem_picks(selecao: Selecao, catalogo: Catalogo) -> list[dict[str, Any]]:
+    """Os picks dos dois times na ordem dos turnos (picks do mesmo turno ficam lado a lado)."""
+    ordem = []
+    picks = [a for a in selecao.acoes if a.tipo is TipoAcao.PICK]
+    for numero, acao in enumerate(picks, start=1):
+        jogador = selecao.jogador(acao.celula)
+        if acao.concluida:
+            estado = "feito"
+        elif acao.em_andamento and not selecao.em_planejamento:
+            estado = "agindo"
+        else:
+            estado = "aguardando"
+        ordem.append(
+            {
+                "ordem": numero,
+                "celula": acao.celula,
+                "aliado": acao.aliada,
+                "eu": acao.celula == selecao.minha_celula,
+                "nome": jogador.nome if jogador else None,
+                "posicao": POSICOES.get(jogador.posicao) if jogador else None,
+                "campeao": _campeao(acao.campeao, catalogo),
+                "intencao": _campeao(jogador.intencao, catalogo) if jogador else None,
+                "estado": estado,
+            }
+        )
+    return ordem
+
+
 def _selecao(
     selecao: Selecao,
     recebida_em: float,
@@ -59,6 +88,7 @@ def _selecao(
         "minha_vez": {"id": vez.id, "tipo": vez.tipo.value, "campeao": vez.campeao}
         if vez
         else None,
+        "ordem_picks": _ordem_picks(selecao, catalogo),
         "aliados": [_jogador(j, selecao, catalogo, feiticos) for j in selecao.aliados],
         "inimigos": [_jogador(j, selecao, catalogo, feiticos) for j in selecao.inimigos],
         "bans": {
@@ -102,6 +132,7 @@ def visao(
         "pode_agir": retrato.conectado and pode_agir(retrato.fase),
         "ausente": retrato.ausente,
         "ready_check": ready_check,
+        "passos": passos(retrato, catalogo, feiticos or {}),
         "selecao": (
             _selecao(retrato.selecao, retrato.selecao_recebida_em, agora, catalogo, feiticos or {})
             if retrato.selecao is not None

@@ -1,7 +1,10 @@
-// Tela da seleção de campeões: etapa, timer, de quem é a vez, bans e os dois times.
+// Tela da seleção: a etapa atual em destaque (vez, timer, grade, runas e feitiços), a ordem
+// dos picks e os bans. No ARAM, sem ordem de picks, mostra os times.
 
 import * as campeoes from "./campeoes.js";
+import * as etapas from "./etapas.js";
 import * as feiticos from "./feiticos.js";
+import * as ordem from "./ordem.js";
 import * as runas from "./runas.js";
 import { contar, criar, el, icone } from "./util.js";
 
@@ -25,19 +28,29 @@ export function desenhar(estado) {
     return;
   }
   const eu = selecao.aliados.find((j) => j.eu) || null;
-  el("etapa").textContent = selecao.aram ? "ARAM" : (ETAPAS[selecao.etapa] || "Seleção");
+  const passo = etapas.atual(estado);
+  const nomeDoPasso = (estado.passos || []).find((p) => p.id === passo);
+  el("etapa").textContent = [selecao.aram ? "ARAM" : ETAPAS[selecao.etapa],
+    nomeDoPasso && nomeDoPasso.nome].filter(Boolean).join(" · ") || "Seleção";
   contar(el("timer"), selecao.segundos_restantes);
   el("vez").textContent = textoDaVez(selecao, eu);
 
   desenharAcao(selecao, eu);
-  runas.preparar(eu ? eu.campeao : null);
-  feiticos.preparar(eu ? eu.feiticos : null);
+  // Runas e feitiços são a etapa depois do seu pick (no ARAM, logo de cara).
+  const naEtapaDeRunas = passo === "runas" && Boolean(eu);
+  runas.preparar(naEtapaDeRunas ? eu.campeao : null);
+  feiticos.preparar(naEtapaDeRunas ? eu.feiticos : null);
+
+  const temOrdem = ordem.desenhar(selecao);
   el("cartao-bans").hidden = selecao.aram;
   desenharBans(el("bans-aliados"), selecao.bans.aliados);
   desenharBans(el("bans-inimigos"), selecao.bans.inimigos);
-  desenharTime(el("aliados"), selecao.aliados);
-  desenharTime(el("inimigos"), selecao.inimigos);
-  el("cartao-inimigos").hidden = selecao.aram || selecao.inimigos.length === 0;
+  el("cartao-aliados").hidden = temOrdem;
+  el("cartao-inimigos").hidden = temOrdem || selecao.inimigos.length === 0;
+  if (!temOrdem) {
+    desenharTime(el("aliados"), selecao.aliados);
+    desenharTime(el("inimigos"), selecao.inimigos);
+  }
 }
 
 function nomeCurto(jogador) {

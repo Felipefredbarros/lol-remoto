@@ -19,6 +19,7 @@ Legenda: ✅ concluída · 🔄 em andamento · ⏳ pendente
 | 10 | API HTTP + SSE | ✅ | `90a4279`, ajuste `a58ecd5` |
 | 10b | Runas recomendadas e feitiços | ✅ (runas validadas; feitiços a conferir) | `ffe9548` |
 | 11 | Interface web do celular | ✅ (usada numa ranqueada) | `0b1ee5b` |
+| 11b | Feitiços separados das runas e página em etapas | ✅ (falta ver no celular e numa fila) | `9a29159` e o seguinte |
 | 12 | `--simular` com roteiro falso (fila → seleção → carregando) | ✅ | `aa7fcd8` |
 | 13 | Scripts de instalação (Agendador, firewall, PIN, tópico do ntfy) | ⏳ | |
 | 14 | CI, README, CHANGELOG e versão 0.1.0 | ⏳ | |
@@ -140,6 +141,14 @@ Login, modo ausente, tela da seleção (bans, picks, quem está escolhendo, time
 - Runas: aparecem quando você tem campeão. Se não houver página "LoL Remoto", a página pergunta antes de sobrescrever a atual.
 - Sem navegador nesta máquina para conferir o visual: `tests/test_web.py` confere IDs, importações, CSP, ausência de `innerHTML` e o contrato com `api/visao.py`. A sintaxe do JS foi conferida com esprima.
 - A API passou a mandar `codigo` (nome do erro) junto com `erro`, para a página distinguir erros com o mesmo status.
+
+### 11b. Feitiços separados e página em etapas ✅
+Pedido do Felipe depois da ranqueada de 11/10: trocar os feitiços sem mexer nas runas e uma página que siga a ordem da partida.
+- **Feitiços:** botões D e F com a grade dos feitiços do modo; escolher o da outra tecla troca os dois de lugar. Aplicar runas não muda mais os feitiços ([ADR 0010](decisoes/0010-feiticos-separados-das-runas.md)).
+- **Etapas:** `api/passos.py` monta fila → partida → intenção → ban → pick → runas → carregando (sem bans, pula intenção e ban; no ARAM, campeão → runas). A página mostra a barra de etapas, a etapa atual, o histórico ("Intenção: Kai'Sa", "Ban: Yasuo") e a ordem dos picks dos dois times.
+- Conferido com a ranqueada gravada: as etapas seguem intenção → ban → pick → runas. O cliente **zera a intenção** uns 20 s depois do seu pick; depois disso o histórico mostra só "Intenção" (sem dizer qual).
+- Conferido com o `--simular` e um "celular falso" por HTTP: o ciclo inteiro, os feitiços do modo e a troca.
+- **Falta:** o Felipe ver no celular (o visual não foi conferido em navegador) e conferir ao vivo, só com GET, o formato de `summoner-spells.json` (`gameModes`, `iconPath`); a fixture `tests/fixtures/feiticos.json` foi montada à mão.
 
 ### 12. Simulação ✅
 `--simular`: um cliente do LoL simulado percorre fila → partida encontrada → seleção → carregamento, para testar o celular sem abrir o LoL.
