@@ -125,6 +125,7 @@ py -m venv .venv
 - [docs/arquitetura.md](docs/arquitetura.md): camadas, fluxo e rotas da API
 - [docs/decisoes/](docs/decisoes/): decisões de arquitetura (ADRs)
 - [CHANGELOG.md](CHANGELOG.md)
+- [SECURITY.md](SECURITY.md): como avisar uma falha de segurança (em privado)
 
 Projeto irmão: [desligador](https://github.com/Felipefredbarros/desligador).
 
